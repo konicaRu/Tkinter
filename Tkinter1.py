@@ -94,11 +94,11 @@ class ManyStrok():
 class PhoneBook():
     def __init__(self, main):
         self.field_call = Label(main, text='Мини телефонный справочник', width=27, font=15)
-        self.state_varible = BooleanVar()
+        self.state_varible = IntVar()
         self.state_varible.set(0)
-        self.radio_button_vasya = Radiobutton(main, text='Вася', variable=self.state_varible, value=0, indicatoron=0, command=self.phone_book)  #
-        self.radio_button_petya = Radiobutton(main, text='Петя', variable=self.state_varible, value=1, indicatoron=0, command=self.phone_book)  #
-        self.radio_button_lesha = Radiobutton(main, text='Леша', variable=self.state_varible, value=2, indicatoron=0, command=self.phone_book)  #
+        self.radio_button_vasya = Radiobutton(main, text='Вася', variable=self.state_varible, value=1, indicatoron=0, command=self.phone_book)  #
+        self.radio_button_petya = Radiobutton(main, text='Петя', variable=self.state_varible, value=2, indicatoron=0, command=self.phone_book)  #
+        self.radio_button_lesha = Radiobutton(main, text='Леша', variable=self.state_varible, value=3, indicatoron=0, command=self.phone_book)  #
         self.field_result = Label(main, width=27, font=15)
         self.field_call.pack()
         self.radio_button_vasya.pack()
@@ -107,11 +107,11 @@ class PhoneBook():
         self.field_result.pack()
 
     def phone_book(self):
-        if self.state_varible.get() == 0:
-            self.field_result['text'] = '+79999999999'
         if self.state_varible.get() == 1:
-            self.field_result['text'] = '+02356998714'
+            self.field_result['text'] = '+79999999999'
         if self.state_varible.get() == 2:
+            self.field_result['text'] = '+02356998714'
+        if self.state_varible.get() == 3:
             self.field_result['text'] = '+88999998714'
 
 class UpMenu():
