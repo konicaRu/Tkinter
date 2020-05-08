@@ -48,7 +48,7 @@ class New():
         self.button_new.grid(row=3, column=0, sticky='s')
 
 
-class Setting():# окно настройка
+class Setting():  # окно настройка
     def __init__(self, main):
         self.button_set = Button(main, text='Setting', width=16, font=10, command=self.window_set)
         self.button_set.grid(row=3, column=2)
@@ -56,30 +56,36 @@ class Setting():# окно настройка
     def window_set(self):  # открываем окно с настройкаами
         self.window_open = Toplevel()  # инициализируем новое окно
         self.window_open.title('Setting')  # титул окна
-        self.window_open.geometry('600x200')  # размер окна
-        self.field_timer = Label(self.window_open, text='Время срабатывания таймера. сек ', borderwidth=3, width=30, font=10).grid(row=0, column=0)  # название поля ввода
+        self.window_open.geometry('700x200')  # размер окна
+        # время срабатывания таймера
+        self.field_timer = Label(self.window_open, text='Время срабатывания таймера. сек ', borderwidth=3, width=40, font=10).grid(row=0, column=0)  # название поля ввода
         self.entry_timer = Entry(self.window_open, width=8, font=15).grid(row=0, column=1)  # создаем окно ввода
-        self.field_number_perform_max = Label(self.window_open, text='Количество исполнителей. Максимальное:', borderwidth=3, width=35, font=10, justify='right').grid(row=1, column=0)  # название поля ввода
-        self.field_number_perform_max = Entry(self.window_open, width=8, font=15).grid(row=1, column=1)  # создаем окно ввода
-        self.field_number_perform_min = Label(self.window_open, text='Минимальное:', borderwidth=3, width=12, font=10, justify='right').grid(row=1, column=2)  # название поля ввода
-        self.field_number_perform_min = Entry(self.window_open, width=8, font=15).grid(row=1, column=3)  # создаем окно ввода
-
-
+        # минимальное и максимальное количество исполнителей
+        self.field_number_unit_max = Label(self.window_open, text='Количество исполнителей. Максимальное:', justify='left', borderwidth=3, width=40, font=10).grid(row=1, column=0)  # название поля ввода
+        self.field_number_unit_max = Entry(self.window_open, width=8, font=15).grid(row=1, column=1)  # создаем окно ввода
+        self.field_number_unit_min = Label(self.window_open, text='Минимальное:', borderwidth=3, width=12, font=10, justify='right').grid(row=1, column=2)  # название поля ввода
+        self.field_number_unit_min = Entry(self.window_open, width=8, font=15).grid(row=1, column=3)  # создаем окно ввода
+        # минимальная и максимальная производительность исполнителя
+        self.field_level_perform_max = Label(self.window_open, text='Производительность исполнителя. Макс:', borderwidth=3, width=40, font=10, justify='right').grid(row=2, column=0)  # название поля ввода
+        self.field_level_perform_max = Entry(self.window_open, width=8, font=15).grid(row=2, column=1)  # создаем окно ввода
+        self.field_level_perform_min = Label(self.window_open, text='Минимальное:', borderwidth=3, width=12, font=10, justify='right').grid(row=2, column=2)  # название поля ввода
+        self.field_level_perform_min = Entry(self.window_open, width=8, font=15).grid(row=2, column=3)  # создаем окно ввода
+# кнопки ок и кенсел
         # self.button_ok = Button(self.window_open, text='OK', width=16, font=10).grid(row=1, column=0)  # создаем кнопку ОК
         # self.button_cancel = Button(self.window_open, text='Cancel', width=16, font=10, command=self.close_win_setting).grid(row=2, column=0)  # создаем кнопку кенсел с командой закрытия окна
 
-    def close_win_setting(self):  # функция закрывающая окно
+    def close_win_setting(self):  # функция закрывающая окно по кнопке кенсел
         self.close_win_setting = self.window_open.destroy()  # команда закрывающая окно
 
 
-class Performer(): # класс исполнитель
+class Unit():  # класс исполнитель
     def __init__(self, name, speed, arr_task):
-        self.name_performer = name
-        self.speed_performer = speed
-        self.task_performer = arr_task  # []
+        self.name_unit = name
+        self.speed_unit = speed
+        self.task_unit = arr_task  # []
 
 
-class Task(): # класс задачи
+class Task():  # класс задачи
     def __init__(self, name, complex):
         self.name_task = name
         self.complexity_task = complex  # сложность задачи
