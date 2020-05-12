@@ -45,23 +45,29 @@ class window_work():
 
 
 class New():
-    def __init__(self, main):
+    def __init__(self, main, amount=5):
         self.button_new = Button(main, text='New', width=16, font=10, command = self.unit)
         self.button_new.grid(row=3, column=0, sticky='s')
-        def unit():
-            
+        self.amount_task = amount
+        self.arr_task = window_performer(root)
+        self.arr_unit = Unit(root)
+    def unit(self):
+        for i in range(8):
+            self.arr_task.list.append('ooklk')
+
 
 class Unit():  # класс исполнитель
-    def __init__(self, name, speed, arr_task):
+    def __init__(self, name='Иван Иванов', speed=5, arr_task=[]):
         self.name_unit = name
         self.speed_unit = speed
         self.task_unit = arr_task  # []
 
 
 class Task():  # класс задачи
-    def __init__(self, name, complex):
+    def __init__(self, name='Разбираем самолет', complex=15):
         self.name_task = name
         self.complexity_task = complex  # сложность задачи
+
 class Setting():  # окно настройка
     def __init__(self, main):
         self.button_set = Button(main, text='Setting', width=16, font=10, command=self.window_setting)
@@ -120,7 +126,7 @@ WindowTask = window_task(root)
 WindowWork = window_work(root)
 ButtonNew = New(root)
 ButtonSetting = Setting(root)
-timer1 = Timer(root)
-
+timer = Timer(root)
+unit = Unit(root)
 
 root.mainloop()
