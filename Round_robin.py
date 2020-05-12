@@ -8,11 +8,11 @@ root.geometry('500x300+300+200')  # ширина=500, высота=400, x=300, y
 root.resizable(True, False)  # размер окна может быть изменён только по горизонтали
 
 
-class window_performer():
+class Window_performer():
     def __init__(self, main):
         self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list
-        self.list = []  # список пунктов в списке
-        for i in self.list:
+        self.list_performer = []  # список пунктов в списке
+        for i in self.list_performer:
             self.listbox.insert(END, i)
         self.field_call = Label(main, text='Список исполнителей', width=18, font=10, justify=LEFT)
 
@@ -20,7 +20,7 @@ class window_performer():
         self.listbox.grid(row=1, column=0)
 
 
-class window_task():
+class Window_task():
     def __init__(self, main):
         self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list
         self.list = []  # список пунктов в списке
@@ -32,7 +32,7 @@ class window_task():
         self.listbox.grid(row=1, column=1)
 
 
-class window_work():
+class Window_work():
     def __init__(self, main):
         self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list
         self.list = []  # список пунктов в списке
@@ -45,15 +45,14 @@ class window_work():
 
 
 class New():
-    def __init__(self, main, amount=5):
-        self.button_new = Button(main, text='New', width=16, font=10, command = self.unit)
+    def __init__(self, main):
+        self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_arr)
         self.button_new.grid(row=3, column=0, sticky='s')
-        self.amount_task = amount
-        self.arr_task = window_performer(root)
-        self.arr_unit = Unit(root)
-    def unit(self):
+        self.arr_unit = Window_performer(main).list_performer
+
+    def unit_arr(self):
         for i in range(8):
-            self.arr_task.list.append('ooklk')
+            self.arr_unit.append(i)
 
 
 class Unit():  # класс исполнитель
@@ -67,6 +66,7 @@ class Task():  # класс задачи
     def __init__(self, name='Разбираем самолет', complex=15):
         self.name_task = name
         self.complexity_task = complex  # сложность задачи
+
 
 class Setting():  # окно настройка
     def __init__(self, main):
@@ -90,17 +90,17 @@ class Setting():  # окно настройка
         self.field_level_perform_max = Entry(self.window_open, width=8, font=15).grid(row=2, column=1)  # создаем окно ввода
         self.field_level_perform_min = Label(self.window_open, text='Минимальное:', borderwidth=3, width=12, font=10, justify='right').grid(row=2, column=2)  # название поля ввода
         self.field_level_perform_min = Entry(self.window_open, width=8, font=15).grid(row=2, column=3)  # создаем окно ввода
-# минимальное и максимальное количество задач
+        # минимальное и максимальное количество задач
         self.field_amount_task_max = Label(self.window_open, text='Количество задач. Макс:', borderwidth=3, width=40, font=10, justify='right').grid(row=3, column=0)  # название поля ввода
         self.field_amount_task_max = Entry(self.window_open, width=8, font=15).grid(row=3, column=1)  # создаем окно ввода
         self.field_amount_task_min = Label(self.window_open, text='Минимальное:', borderwidth=3, width=12, font=10, justify='right').grid(row=3, column=2)  # название поля ввода
         self.field_amount_task_min = Entry(self.window_open, width=8, font=15).grid(row=3, column=3)  # создаем окно ввода
-# минимальная и максимальная сложность задачи
+        # минимальная и максимальная сложность задачи
         self.field_complexity_task_max = Label(self.window_open, text='Сложность задач. Макс:', borderwidth=3, width=40, font=10, justify='right').grid(row=4, column=0)  # название поля ввода
         self.field_complexity_task_max = Entry(self.window_open, width=8, font=15).grid(row=4, column=1)  # создаем окно ввода
         self.field_complexity_task_min = Label(self.window_open, text='Минимальное:', borderwidth=3, width=12, font=10, justify='right').grid(row=4, column=2)  # название поля ввода
         self.field_complexity_task_min = Entry(self.window_open, width=8, font=15).grid(row=4, column=3)  # создаем окно ввода
-# кнопки ок и кенсел
+        # кнопки ок и кенсел
         self.button_ok = Button(self.window_open, text='OK', width=16, font=10).grid(row=5, column=0)  # создаем кнопку ОК
         self.button_cancel = Button(self.window_open, text='Cancel', width=16, font=10, command=self.close_win_setting).grid(row=5, column=1)  # создаем кнопку кенсел с командой закрытия окна
 
@@ -108,8 +108,7 @@ class Setting():  # окно настройка
         self.close_win_setting = self.window_open.destroy()  # команда закрывающая окно
 
 
-
-class Timer(): # класс таймер
+class Timer():  # класс таймер
     def __init__(self, main):
         self.count_timer = 0
         self.response_time = 5
@@ -121,10 +120,11 @@ class Timer(): # класс таймер
             print(self.count_timer, type(self.count_timer), type(self.response_time))
 
 
-WindowPerformer = window_performer(root)
-WindowTask = window_task(root)
-WindowWork = window_work(root)
 ButtonNew = New(root)
+windowsper = Window_performer(root)
+WindowTask = Window_task(root)
+WindowWork = Window_work(root)
+
 ButtonSetting = Setting(root)
 timer = Timer(root)
 unit = Unit(root)
