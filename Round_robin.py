@@ -1,5 +1,6 @@
 from tkinter import *
 import random
+import time
 
 root = Tk()
 root.title('Round robin')  # надпись на верху
@@ -10,7 +11,7 @@ root.resizable(True, False)  # размер окна может быть изм�
 class window_performer():
     def __init__(self, main):
         self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list
-        self.list = ["Москва", "Санкт-Петербург", "Саратов", "Омск"]  # список пунктов в списке
+        self.list = []  # список пунктов в списке
         for i in self.list:
             self.listbox.insert(END, i)
         self.field_call = Label(main, text='Список исполнителей', width=18, font=10, justify=LEFT)
@@ -22,7 +23,7 @@ class window_performer():
 class window_task():
     def __init__(self, main):
         self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list
-        self.list = ["Москва", "Санкт-Петербург", "Саратов", "Омск"]  # список пунктов в списке
+        self.list = []  # список пунктов в списке
         for i in self.list:
             self.listbox.insert(END, i)
         self.field_call = Label(main, text='Список задач', width=18, font=10, justify=LEFT)
@@ -34,7 +35,7 @@ class window_task():
 class window_work():
     def __init__(self, main):
         self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list
-        self.list = ["Москва", "Санкт-Петербург", "Саратов", "Омск"]  # список пунктов в списке
+        self.list = []  # список пунктов в списке
         for i in self.list:
             self.listbox.insert(END, i)
         self.field_call = Label(main, text='Список работ', width=15, font=10, justify=LEFT)
@@ -45,22 +46,34 @@ class window_work():
 
 class New():
     def __init__(self, main):
-        self.button_new = Button(main, text='New', width=16, font=10)
+        self.button_new = Button(main, text='New', width=16, font=10, command = self.unit)
         self.button_new.grid(row=3, column=0, sticky='s')
+        def unit():
+            
+
+class Unit():  # класс исполнитель
+    def __init__(self, name, speed, arr_task):
+        self.name_unit = name
+        self.speed_unit = speed
+        self.task_unit = arr_task  # []
 
 
+class Task():  # класс задачи
+    def __init__(self, name, complex):
+        self.name_task = name
+        self.complexity_task = complex  # сложность задачи
 class Setting():  # окно настройка
     def __init__(self, main):
-        self.button_set = Button(main, text='Setting', width=16, font=10, command=self.window_set)
+        self.button_set = Button(main, text='Setting', width=16, font=10, command=self.window_setting)
         self.button_set.grid(row=3, column=2)
 
-    def window_set(self):  # открываем окно с настройкаами
+    def window_setting(self):  # открываем окно с настройкаами
         self.window_open = Toplevel()  # инициализируем новое окно
         self.window_open.title('Setting')  # титул окна
         self.window_open.geometry('700x200')  # размер окна
         # время срабатывания таймера
-        self.field_timer = Label(self.window_open, text='Время срабатывания таймера. сек ', borderwidth=3, width=40, font=10).grid(row=0, column=0)  # название поля ввода
-        self.entry_timer = Entry(self.window_open, width=8, font=15).grid(row=0, column=1)  # создаем окно ввода
+        self.field_timer_trigger = Label(self.window_open, text='Время срабатывания таймера. сек ', borderwidth=3, width=40, font=10).grid(row=0, column=0)  # название поля ввода
+        self.entry_timer_trigger = Entry(self.window_open, width=8, font=15).grid(row=0, column=1)  # создаем окно ввода
         # минимальное и максимальное количество исполнителей
         self.field_number_unit_max = Label(self.window_open, text='Количество исполнителей. Максимальное:', justify='left', borderwidth=3, width=40, font=10).grid(row=1, column=0)  # название поля ввода
         self.field_number_unit_max = Entry(self.window_open, width=8, font=15).grid(row=1, column=1)  # создаем окно ввода
@@ -85,21 +98,21 @@ class Setting():  # окно настройка
         self.button_ok = Button(self.window_open, text='OK', width=16, font=10).grid(row=5, column=0)  # создаем кнопку ОК
         self.button_cancel = Button(self.window_open, text='Cancel', width=16, font=10, command=self.close_win_setting).grid(row=5, column=1)  # создаем кнопку кенсел с командой закрытия окна
 
-    def close_win_setting(self):  # функция закрывающая окно по кнопке кенсел
+    def close_win_setting(self):  # функция закрывающая окно по кнопке cancel
         self.close_win_setting = self.window_open.destroy()  # команда закрывающая окно
 
 
-class Unit():  # класс исполнитель
-    def __init__(self, name, speed, arr_task):
-        self.name_unit = name
-        self.speed_unit = speed
-        self.task_unit = arr_task  # []
 
+class Timer(): # класс таймер
+    def __init__(self, main):
+        self.count_timer = 0
+        self.response_time = 5
 
-class Task():  # класс задачи
-    def __init__(self, name, complex):
-        self.name_task = name
-        self.complexity_task = complex  # сложность задачи
+    def timer(self):
+        while self.count_timer < self.response_time:
+            time.sleep(1)  # in seconds
+            self.count_timer += 1
+            print(self.count_timer, type(self.count_timer), type(self.response_time))
 
 
 WindowPerformer = window_performer(root)
@@ -107,5 +120,7 @@ WindowTask = window_task(root)
 WindowWork = window_work(root)
 ButtonNew = New(root)
 ButtonSetting = Setting(root)
+timer1 = Timer(root)
+
 
 root.mainloop()
