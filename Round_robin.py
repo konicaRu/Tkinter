@@ -9,15 +9,27 @@ root.resizable(True, False)  # размер окна может быть изм�
 
 
 class Window_performer():
-    def __init__(self, main):
-        self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list
+    def __init__(self, main, amount=2):
+        self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list_performer
         self.list_performer = []  # список пунктов в списке
         for i in self.list_performer:
             self.listbox.insert(END, i)
         self.field_call = Label(main, text='Список исполнителей', width=18, font=10, justify=LEFT)
-
         self.field_call.grid(row=0, column=0)
         self.listbox.grid(row=1, column=0)
+
+        self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_arr) # кнопка New на первом листе
+        self.button_new.grid(row=3, column=0, sticky='s') # расположение кнопки New
+        self.unit = Unit() # исполнители
+        self.amount = amount # количество исполнителей
+        self.list_task = [] # массив для хранения задвч
+    def unit_arr(self):
+        for i in range(self.amount):
+            self.list_performer.append(self.unit.name_unit)
+        for i in self.list_performer:
+            self.listbox.insert(END, i)
+
+
 
 
 class Window_task():
@@ -44,15 +56,15 @@ class Window_work():
         self.listbox.grid(row=1, column=2)
 
 
-class New():
-    def __init__(self, main):
-        self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_arr)
-        self.button_new.grid(row=3, column=0, sticky='s')
-        self.arr_unit = Window_performer(main).list_performer
-
-    def unit_arr(self):
-        for i in range(8):
-            self.arr_unit.append(i)
+# class New():
+#     def __init__(self, main):
+#         self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_arr)
+#         self.button_new.grid(row=3, column=0, sticky='s')
+#         self.arr_unit = Window_performer(main).list_performer
+#
+#     def unit_arr(self):
+#         for i in range(8):
+#             self.arr_unit.insert(END, i)
 
 
 class Unit():  # класс исполнитель
@@ -119,8 +131,23 @@ class Timer():  # класс таймер
             self.count_timer += 1
             print(self.count_timer, type(self.count_timer), type(self.response_time))
 
+class GenereteRandom():
+    first_names = ('Варвара', 'Анникова', 'Наталья', 'Лидия', 'Федор', 'Якуба', 'Агафона', 'Римма', 'Светлана', 'Рената', 'Анна', 'Алекс', 'Жанна', 'Ким', 'Мария', 'Марфа')
 
-ButtonNew = New(root)
+    last_names = ('Юневича', 'Гайдукова', 'Мухова', 'Левченко', 'Щербатыха', 'Львова', 'Щитта', 'Яндуткина', 'Шелыгина', 'Ахременко', 'Абросимова', 'Аронова', 'Трухина', 'Оспищева')
+
+    name_group = "".join(random.choice(first_names) + " " + random.choice(last_names))
+    # group=" ".join(random.choice(first_names)+" "+random.choice(last_names) for _ in range(3)) генерировать количество
+    # group=[" ".join(random.choice(first_names)+" "+random.choice(last_names) for _ in range(3))] генерировать количество в массив
+
+    task_first_names = ('Пашет', 'Сеет', 'Собирает', 'Починяет', 'Лудит', 'Паяяет', 'Культивирует', 'Копает', 'Закапывает', 'Откапывает', 'Режет', 'Чистит', 'Полирует', 'Выращивает', 'Боронует', 'Удобряет')
+    task_last_names = ('рис', 'гречку', 'яблоки', 'примус', 'картошку', 'яму', 'землю', 'помидоры', 'огурцы', 'детали', 'репку', 'машину', 'трактор', 'вишню')
+
+    task_group = "".join(random.choice(task_first_names) + " " + random.choice(task_last_names))
+    # group=" ".join(random.choice(first_names)+" "+random.choice(last_names) for _ in range(3)) генерировать количество
+    # group=[" ".join(random.choice(first_names)+" "+random.choice(last_names) for _ in range(3))] генерировать количество в массив
+    print(name_group, task_group)
+#ButtonNew = New(root)
 windowsper = Window_performer(root)
 WindowTask = Window_task(root)
 WindowWork = Window_work(root)
