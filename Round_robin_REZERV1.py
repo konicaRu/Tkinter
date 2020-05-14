@@ -23,6 +23,7 @@ class Window_performer():
         self.unit = Unit() # исполнители
         self.task = Task() # количество исполнителей
         self.list_unit_and_task = {} # массив для хранения исполнителей и задач
+
     def unit_arr(self):
         self.unit.unit_generate()
         self.task.task_generate()
