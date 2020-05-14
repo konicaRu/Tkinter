@@ -4,59 +4,69 @@ import time
 
 root = Tk()
 root.title('Round robin')  # надпись на верху
-root.geometry('500x300+300+200')  # ширина=500, высота=400, x=300, y=200 размер окна
+root.geometry('600x300+300+200')  # ширина=500, высота=400, x=300, y=200 размер окна
 root.resizable(True, False)  # размер окна может быть изменён только по горизонтали
 
 
-class Window_performer():
+class WindowUnit():
     def __init__(self, main):
         self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list_performer
-        self.list_performer = {}  # список пунктов в списке
-        # for i in self.list_performer:
-        #     self.listbox.insert(END, i)
         self.field_call = Label(main, text='Список исполнителей', width=18, font=10, justify=LEFT)
         self.field_call.grid(row=0, column=0)
         self.listbox.grid(row=1, column=0)
 
-        self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_arr) # кнопка New на первом листе
-        self.button_new.grid(row=3, column=0, sticky='s') # расположение кнопки New
-        self.unit = Unit() # ссылка на класс исполнители
-        self.task = Task() # ссылка на класс задачи
-        self.list_unit_and_task = {} # массив для хранения исполнителей и задач
+        self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_and_task_arr)  # кнопка New на первом листе
+        self.button_new.grid(row=3, column=0, sticky='s')  # расположение кнопки New
+        self.unit = Unit()  # ссылка на класс исполнители
+        self.task = Task()  # ссылка на класс задачи
+        self.list_unit_and_task = {}  # массив для хранения исполнителей и задач
 
-    def unit_arr(self):
-        self.unit.unit_generate() # запускаем в классе Unit функцию unit_generate(), формируем список исполнителей
-        self.task.task_generate() # # запускаем в классе Task функцию task_generate(), формируем список задач
+    def unit_and_task_arr(self): # формируем  два списока исполнителей и задач self.list_unit_and_task-для работы и self.list_unit_and_task_to_display для отображения
+        self.unit.unit_generate()  # запускаем в классе Unit функцию unit_generate(), формируем список исполнителей
+        self.task.task_generate()  # # запускаем в классе Task функцию task_generate(), формируем список задач
         shift = 0
-        for keys in self.unit.arr_unit: # формируем рабочий словарь  self.list_unit_and_task вида {'Ivan 7': ['Пашет', 'Лудит', 'Закапывает'], 'Vasya 5': ['Сеет', 'Паяяет', 'Откапывает']}
-            self.list_unit_and_task[keys] = [self.task.arr_task[val] for val in range(shift, len(self.task.arr_task), len(self.unit.arr_unit))]# генератор списков в словаре
+        for keys in self.unit.arr_unit:  # формируем рабочий словарь  self.list_unit_and_task вида {'Ivan 7': ['Пашет', 'Лудит', 'Закапывает'], 'Vasya 5': ['Сеет', 'Паяяет', 'Откапывает']}
+            self.list_unit_and_task[keys] = [self.task.arr_task[val] for val in range(shift, len(self.task.arr_task), len(self.unit.arr_unit))]  # генератор списков в словаре
             shift += 1
- # формируем отдельный словарь для отображения в программе  исполнитель и первая завдача в списке
+        # формируем отдельный словарь для отображения в программе  исполнитель и первая завдача в списке
         int_arr_unit = []
-        for key in self.list_unit_and_task:# формируем список из ключей
+        for key in self.list_unit_and_task:  # формируем список из ключей
             int_arr_unit.append(key)
         int_arr_task = []
-        for key in self.list_unit_and_task: # формируем список из первых задач
-            int_arr_task.append(self.list_unit_and_task[key][0]) # обьеденяем два списка в словарь
-        self.list_performer = dict(zip(int_arr_unit, int_arr_task)) # это обьединялка
-        for key, values in self.list_performer.items():# пробегаем по словарю передаем в программу
-           self.listbox.insert(END, key, values)
+        for key in self.list_unit_and_task:  # формируем список из первых задач
+            int_arr_task.append(self.list_unit_and_task[key][0])  # обьеденяем два списка в словарь
+        self.list_unit_and_task_to_display = []
+        for i in range(len(int_arr_unit)):
+            inter_arr_displey =[str(int_arr_unit[i]) +' '+ str(int_arr_task[i])]
+            self.list_unit_and_task_to_display.append(inter_arr_displey)
+           # это обьединялка в один словарь self.list_unit_and_task_to_display{}
+        for unit in self.list_unit_and_task_to_display:  # пробегаем по словарю передаем в программу
+            self.listbox.insert(END, unit)
 
-class Window_task():
+
+class WindowTask():
     def __init__(self, main):
-        self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list
-        self.list = []  # список пунктов в списке
-        for i in self.list:
-            self.listbox.insert(END, i)
+        self.field_result = Label(main, height=5, width=25)  # список с пуктами из листа list
         self.field_call = Label(main, text='Список задач', width=18, font=10, justify=LEFT)
-
         self.field_call.grid(row=0, column=1)
-        self.listbox.grid(row=1, column=1)
+        self.field_result.grid(row=1, column=1)
+        self.window_unit = WindowUnit(main)
+        main.bind('<Button-1>', self.click_on_key)
+
+    def click_on_key(self, event):
+        cursor = list(self.window_unit.listbox.curselection())  # Метод   curselection()   позволяет   получить   в   виде   кортежа   индексы   выбранных   элементов экземпляра Listbox.
+        for keys in cursor:
+            print(cursor)
+            print(keys)
+            inter_list_unit_and_task = list(self.window_unit.list_unit_and_task.values())
+            if True :
+                self.field_result['text'] = inter_list_unit_and_task[keys]
 
 
-class Window_work():
+
+class WindowWork():
     def __init__(self, main):
-        self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list
+        self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пунктами из листа list
         self.list = []  # список пунктов в списке
         for i in self.list:
             self.listbox.insert(END, i)
@@ -78,11 +88,12 @@ class Window_work():
 
 
 class Unit():  # класс исполнитель
-    def __init__(self, sum= 3, min_speed=1, max_speed=6):
-        self.sum_unit = sum # количество исполнителей
-        self.min_speed_unit = min_speed # мин производительность
-        self.max_speed_unit = max_speed# макс производительность
-    def unit_generate(self): # генерируем список исполнитерлей вида "Вася 5" случайным образом, где вася имя спонителя а 5 его производительность
+    def __init__(self, sum=3, min_speed=1, max_speed=6):
+        self.sum_unit = sum  # количество исполнителей
+        self.min_speed_unit = min_speed  # мин производительность
+        self.max_speed_unit = max_speed  # макс производительность
+
+    def unit_generate(self):  # генерируем список исполнитерлей вида "Вася 5" случайным образом, где вася имя спонителя а 5 его производительность
         unit_names = ('Варвара', 'Вася', 'Наталья', 'Лидия', 'Федор', 'Петя', 'Агафона', 'Алла', 'Светлана', 'Рената', 'Анна', 'Алекс', 'Жанна', 'Пол', 'Мария', 'Тор')
         self.arr_unit = []
         for i in range(self.sum_unit):
@@ -90,11 +101,12 @@ class Unit():  # класс исполнитель
 
 
 class Task():  # класс задачи
-    def __init__(self, sum= 10, min_complex=50, max_complex=300):
-        self.sum_task = sum # количество задач
+    def __init__(self, sum=10, min_complex=50, max_complex=300):
+        self.sum_task = sum  # количество задач
         self.min_complexity_task = min_complex  # мин сложность задачи
-        self.max_complexity_task = max_complex # макс сложность задачи
-    def task_generate(self): # генерируем список задач вида "лудит  5" случайным образом, где Лудит вид задачи а 5 ее сложность
+        self.max_complexity_task = max_complex  # макс сложность задачи
+
+    def task_generate(self):  # генерируем список задач вида "лудит  5" случайным образом, где Лудит вид задачи а 5 ее сложность
         task_names = ('Пашет', 'Сеет', 'Собирает', 'Починяет', 'Лудит', 'Паяяет', 'Культивирует', 'Копает', 'Закапывает', 'Откапывает', 'Режет', 'Чистит', 'Полирует', 'Выращивает')
         self.arr_task = []
         for i in range(self.sum_task):
@@ -109,7 +121,7 @@ class Setting():  # окно настройка
     def window_setting(self):  # открываем окно с настройкаами
         self.window_open = Toplevel()  # инициализируем новое окно
         self.window_open.title('Setting')  # титул окна
-        self.window_open.geometry('700x200')  # размер окна
+        self.window_open.geometry('800x200')  # размер окна
         # время срабатывания таймера
         self.field_timer_trigger = Label(self.window_open, text='Время срабатывания таймера. сек ', borderwidth=3, width=40, font=10).grid(row=0, column=0)  # название поля ввода
         self.entry_timer_trigger = Entry(self.window_open, width=8, font=15).grid(row=0, column=1)  # создаем окно ввода
@@ -152,6 +164,7 @@ class Timer():  # класс таймер
             self.count_timer += 1
             print(self.count_timer, type(self.count_timer), type(self.response_time))
 
+
 # class GenereteRandom():
 #     first_names = ('Варвара', 'Анникова', 'Наталья', 'Лидия', 'Федор', 'Якуба', 'Агафона', 'Римма', 'Светлана', 'Рената', 'Анна', 'Алекс', 'Жанна', 'Ким', 'Мария', 'Марфа')
 #
@@ -168,10 +181,10 @@ class Timer():  # класс таймер
 #     # group=" ".join(random.choice(first_names)+" "+random.choice(last_names) for _ in range(3)) генерировать количество
 #     # group=[" ".join(random.choice(first_names)+" "+random.choice(last_names) for _ in range(3))] генерировать количество в массив
 #     print(name_group, task_group)
-#ButtonNew = New(root)
-windowsper = Window_performer(root)
-WindowTask = Window_task(root)
-WindowWork = Window_work(root)
+# ButtonNew = New(root)
+windowsper = WindowUnit(root)
+WindowTask = WindowTask(root)
+WindowWork = WindowWork(root)
 
 ButtonSetting = Setting(root)
 timer = Timer(root)
