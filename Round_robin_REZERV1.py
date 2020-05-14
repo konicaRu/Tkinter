@@ -20,25 +20,26 @@ class Window_performer():
 
         self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_arr) # кнопка New на первом листе
         self.button_new.grid(row=3, column=0, sticky='s') # расположение кнопки New
-        self.unit = Unit() # исполнители
-        self.task = Task() # количество исполнителей
+        self.unit = Unit() # ссылка на класс исполнители
+        self.task = Task() # ссылка на класс задачи
         self.list_unit_and_task = {} # массив для хранения исполнителей и задач
 
     def unit_arr(self):
-        self.unit.unit_generate()
-        self.task.task_generate()
+        self.unit.unit_generate() # запускаем в классе Unit функцию unit_generate(), формируем список исполнителей
+        self.task.task_generate() # # запускаем в классе Task функцию task_generate(), формируем список задач
         shift = 0
-        for keys in self.unit.arr_unit:
-            self.list_unit_and_task[keys] = [self.task.arr_task[val] for val in range(shift, len(self.task.arr_task), len(self.unit.arr_unit))]
+        for keys in self.unit.arr_unit: # формируем рабочий словарь  self.list_unit_and_task вида {'Ivan 7': ['Пашет', 'Лудит', 'Закапывает'], 'Vasya 5': ['Сеет', 'Паяяет', 'Откапывает']}
+            self.list_unit_and_task[keys] = [self.task.arr_task[val] for val in range(shift, len(self.task.arr_task), len(self.unit.arr_unit))]# генератор списков в словаре
             shift += 1
+ # формируем отдельный словарь для отображения в программе  исполнитель и первая завдача в списке
         int_arr_unit = []
-        for key in self.list_unit_and_task:
+        for key in self.list_unit_and_task:# формируем список из ключей
             int_arr_unit.append(key)
         int_arr_task = []
-        for key in self.list_unit_and_task:
-            int_arr_task.append(self.list_unit_and_task[key][0])
-        self.list_performer = dict(zip(int_arr_unit, int_arr_task))
-        for key, values in self.list_performer.items():
+        for key in self.list_unit_and_task: # формируем список из первых задач
+            int_arr_task.append(self.list_unit_and_task[key][0]) # обьеденяем два списка в словарь
+        self.list_performer = dict(zip(int_arr_unit, int_arr_task)) # это обьединялка
+        for key, values in self.list_performer.items():# пробегаем по словарю передаем в программу
            self.listbox.insert(END, key, values)
 
 class Window_task():
@@ -78,10 +79,10 @@ class Window_work():
 
 class Unit():  # класс исполнитель
     def __init__(self, sum= 3, min_speed=1, max_speed=6):
-        self.sum_unit = sum
-        self.min_speed_unit = min_speed
-        self.max_speed_unit = max_speed
-    def unit_generate(self):
+        self.sum_unit = sum # количество исполнителей
+        self.min_speed_unit = min_speed # мин производительность
+        self.max_speed_unit = max_speed# макс производительность
+    def unit_generate(self): # генерируем список исполнитерлей вида "Вася 5" случайным образом, где вася имя спонителя а 5 его производительность
         unit_names = ('Варвара', 'Вася', 'Наталья', 'Лидия', 'Федор', 'Петя', 'Агафона', 'Алла', 'Светлана', 'Рената', 'Анна', 'Алекс', 'Жанна', 'Пол', 'Мария', 'Тор')
         self.arr_unit = []
         for i in range(self.sum_unit):
@@ -89,11 +90,11 @@ class Unit():  # класс исполнитель
 
 
 class Task():  # класс задачи
-    def __init__(self, sum= 3, min_complex=1, max_complex=6):
-        self.sum_task = sum
-        self.min_complexity_task = min_complex  # сложность задачи
-        self.max_complexity_task = max_complex
-    def task_generate(self):
+    def __init__(self, sum= 10, min_complex=50, max_complex=300):
+        self.sum_task = sum # количество задач
+        self.min_complexity_task = min_complex  # мин сложность задачи
+        self.max_complexity_task = max_complex # макс сложность задачи
+    def task_generate(self): # генерируем список задач вида "лудит  5" случайным образом, где Лудит вид задачи а 5 ее сложность
         task_names = ('Пашет', 'Сеет', 'Собирает', 'Починяет', 'Лудит', 'Паяяет', 'Культивирует', 'Копает', 'Закапывает', 'Откапывает', 'Режет', 'Чистит', 'Полирует', 'Выращивает')
         self.arr_task = []
         for i in range(self.sum_task):
