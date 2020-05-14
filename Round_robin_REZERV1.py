@@ -11,7 +11,7 @@ root.resizable(True, False)  # размер окна может быть изм�
 class Window_performer():
     def __init__(self, main):
         self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list_performer
-        self.list_performer = {'Родное 5':['Пашем 7', 'Бороним 9'],'ytРодное 8':['ytПашем 7', 'ytБороним 9'], 'RytРодное 10':['RytПашем 7', 'RytБороним 9']}  # список пунктов в списке
+        self.list_performer = {}  # список пунктов в списке
         # for i in self.list_performer:
         #     self.listbox.insert(END, i)
         self.field_call = Label(main, text='Список исполнителей', width=18, font=10, justify=LEFT)
@@ -20,19 +20,25 @@ class Window_performer():
 
         self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_arr) # кнопка New на первом листе
         self.button_new.grid(row=3, column=0, sticky='s') # расположение кнопки New
-        self.unit = Unit # исполнители
-        self.task = Task # количество исполнителей
+        self.unit = Unit() # исполнители
+        self.task = Task() # количество исполнителей
         self.list_unit_and_task = {} # массив для хранения исполнителей и задач
     def unit_arr(self):
-        self.unit.arr_unit()
-        self.task.arr_task()
+        self.unit.unit_generate()
+        self.task.task_generate()
         shift = 0
         for keys in self.unit.arr_unit:
             self.list_unit_and_task[keys] = [self.task.arr_task[val] for val in range(shift, len(self.task.arr_task), len(self.unit.arr_unit))]
             shift += 1
-
-
-
+        int_arr_unit = []
+        for key in self.list_unit_and_task:
+            int_arr_unit.append(key)
+        int_arr_task = []
+        for key in self.list_unit_and_task:
+            int_arr_task.append(self.list_unit_and_task[key][0])
+        self.list_performer = dict(zip(int_arr_unit, int_arr_task))
+        for key, values in self.list_performer.items():
+           self.listbox.insert(END, key, values)
 
 class Window_task():
     def __init__(self, main):
