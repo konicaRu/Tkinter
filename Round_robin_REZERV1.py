@@ -11,24 +11,27 @@ root.resizable(True, False)  # размер окна может быть изм�
 class Window_performer():
     def __init__(self, main, amount=2):
         self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list_performer
-        self.list_performer = []  # список пунктов в списке
-        for i in self.list_performer:
-            self.listbox.insert(END, i)
+        self.list_performer = {'Родное 5':['Пашем 7', 'Бороним 9'],'ytРодное 8':['ytПашем 7', 'ytБороним 9'], 'RytРодное 10':['RytПашем 7', 'RytБороним 9']}  # список пунктов в списке
+        # for i in self.list_performer:
+        #     self.listbox.insert(END, i)
         self.field_call = Label(main, text='Список исполнителей', width=18, font=10, justify=LEFT)
         self.field_call.grid(row=0, column=0)
         self.listbox.grid(row=1, column=0)
 
         self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_arr) # кнопка New на первом листе
         self.button_new.grid(row=3, column=0, sticky='s') # расположение кнопки New
-        self.unit = Unit() # исполнители
+        #self.unit = Unit() # исполнители
         self.amount = amount # количество исполнителей
         self.list_task = [] # массив для хранения задвч
     def unit_arr(self):
-        for i in range(self.amount):
-            self.list_performer.append(self.unit)
-        for i in self.list_performer:
-            self.listbox.insert(END, i.speed_unit)
-
+        # for i in range(self.amount):
+        #     self.list_performer.append(self.unit)
+        # for i in self.list_performer:
+        #     self.listbox.insert(END, i.speed_unit)
+         for key in self.list_performer:
+             self.listbox.insert(END, key)
+         for key in self.list_performer:
+             self.listbox.insert(END, self.list_performer[key][0])
 
 
 
@@ -68,16 +71,27 @@ class Window_work():
 
 
 class Unit():  # класс исполнитель
-    def __init__(self, name='Иван Иванов', speed=5, arr_task=[]):
-        self.name_unit = name
-        self.speed_unit = speed
-        self.task_unit = arr_task  # []
+    def __init__(self, sum= 3, min_speed=1, max_speed=6):
+        self.sum_unit = sum
+        self.min_speed_unit = min_speed
+        self.max_speed_unit = max_speed
+    def unit_generate(self):
+        unit_names = ('Варвара', 'Вася', 'Наталья', 'Лидия', 'Федор', 'Петя', 'Агафона', 'Алла', 'Светлана', 'Рената', 'Анна', 'Алекс', 'Жанна', 'Пол', 'Мария', 'Тор')
+        self.arr_unit = []
+        for i in range(self.sum_unit):
+            self.arr_unit.append("".join(random.choice(unit_names) + " " + str(random.randint(self.min_speed_unit, self.max_speed_unit))))
 
 
 class Task():  # класс задачи
-    def __init__(self, name='Разбираем самолет', complex=15):
-        self.name_task = name
-        self.complexity_task = complex  # сложность задачи
+    def __init__(self, sum= 3, min_complex=1, max_complex=6):
+        self.sum_task = sum
+        self.min_complexity_task = min_complex  # сложность задачи
+        self.max_complexity_task = max_complex
+    def task_generate(self):
+        task_names = ('Пашет', 'Сеет', 'Собирает', 'Починяет', 'Лудит', 'Паяяет', 'Культивирует', 'Копает', 'Закапывает', 'Откапывает', 'Режет', 'Чистит', 'Полирует', 'Выращивает')
+        self.arr_task = []
+        for i in range(self.sum_task):
+            self.arr_task.append("".join(random.choice(task_names) + " " + str(random.randint(self.min_complexity_task, self.max_complexity_task))))
 
 
 class Setting():  # окно настройка
