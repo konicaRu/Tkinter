@@ -19,16 +19,15 @@ class WindowUnit():
         self.button_new.grid(row=3, column=0, sticky='s')  # расположение кнопки New
         self.unit = Unit()  # ссылка на класс исполнители
         self.task = Task()  # ссылка на класс задачи
-        #self.timer = Timer()  # ссылка на класс задачи
-        self.keys = '' # переменая для таймера чтобы получить доступ к списку задач self.list_unit_and_task[self.keys]
+        self.timer = Timer()  # ссылка на класс задачи
         self.list_unit_and_task = {}  # массив для хранения исполнителей и задач
 
     def unit_and_task_arr(self):  # формируем  два списока исполнителей и задач self.list_unit_and_task-для работы и self.list_unit_and_task_to_display для отображения
         self.unit.unit_generate()  # запускаем в классе Unit функцию unit_generate(), формируем список исполнителей
         self.task.task_generate()  # # запускаем в классе Task функцию task_generate(), формируем список задач
         shift = 0
-        for self.keys in self.unit.arr_unit:  # формируем рабочий словарь  self.list_unit_and_task вида {'Ivan 7': ['Пашет', 'Лудит', 'Закапывает'], 'Vasya 5': ['Сеет', 'Паяяет', 'Откапывает']}
-            self.list_unit_and_task[self.keys] = [self.task.arr_task[val] for val in range(shift, len(self.task.arr_task), len(self.unit.arr_unit))]  # генератор списков в словаре
+        for keys in self.unit.arr_unit:  # формируем рабочий словарь  self.list_unit_and_task вида {'Ivan 7': ['Пашет', 'Лудит', 'Закапывает'], 'Vasya 5': ['Сеет', 'Паяяет', 'Откапывает']}
+            self.list_unit_and_task[keys] = [self.task.arr_task[val] for val in range(shift, len(self.task.arr_task), len(self.unit.arr_unit))]  # генератор списков в словаре
             # Первому ключу из self.unit.arr_unit присваивается первое значение из self.task.arr_task,
             # второму -- вторая и т. д. N+1 - я задача снова назначается первому ключу, и так далее по кругу.
             shift += 1
@@ -46,7 +45,16 @@ class WindowUnit():
         # это обьединялка в один словарь self.list_unit_and_task_to_display{}
         for unit in self.list_unit_and_task_to_display:  # пробегаем по словарю передаем в программу
             self.listbox.insert(END, unit)
-
+        self.work_unit() # запускаем функцию работу исполнителей
+    def work_unit(self, ):
+        self.timer.timer()
+        while len(self.list_unit_and_task[key]) > 0:
+            if  self.timer.trigger_time == self.timer.count_timer:
+                for key in self.list_unit_and_task:
+                    lvl_unit  =  int(key[-2:])
+                    lvl_first_task = self.list_unit_and_task[key][0][-3:]
+                    rest_of_task = lvl_first_task - lvl_unit
+        pass
 
 class WindowTask():
     def __init__(self, main):
@@ -60,6 +68,7 @@ class WindowTask():
     def click_on_key(self, event):
         cursor = list(self.window_unit.listbox.curselection())  # Метод   curselection()   позволяет   получить   в   виде   кортежа   индексы   выбранных   элементов экземпляра Listbox.
         for keys in cursor:
+            # чтобы сделать в столбик вместо  Label работать с классом Listbox
             inter_list_unit_and_task = list(self.window_unit.list_unit_and_task.values())  # можно отобразить список задач без {} фигурных скобок инф в Tkinter2
             if True:
                 self.field_result['text'] = inter_list_unit_and_task[keys]
@@ -89,7 +98,7 @@ class WindowWork():
 
 
 class Unit():  # класс исполнитель
-    def __init__(self, sum=3, min_speed=1, max_speed=6):
+    def __init__(self, sum=3, min_speed=1, max_speed=99):
         self.sum_unit = sum  # количество исполнителей
         self.min_speed_unit = min_speed  # мин производительность
         self.max_speed_unit = max_speed  # макс производительность
@@ -102,7 +111,7 @@ class Unit():  # класс исполнитель
 
 
 class Task():  # класс задачи
-    def __init__(self, sum=10, min_complex=50, max_complex=300):
+    def __init__(self, sum=10, min_complex=200, max_complex=500):
         self.sum_task = sum  # количество задач
         self.min_complexity_task = min_complex  # мин сложность задачи
         self.max_complexity_task = max_complex  # макс сложность задачи
@@ -155,12 +164,12 @@ class Setting():  # окно настройка
 
 
 class Timer():  # класс таймер
-    def __init__(self, time = 5):
+    def __init__(self, time=5):
         self.count_timer = 0
-        self.trigger_time = 5
+        self.trigger_time = time
 
     def timer(self):
-        while len(WindowUnit.self.list_unit_and_task[WindowUnit.keys]) > 0:
+        while True:
             time.sleep(1)  # in seconds
             self.count_timer += 1
             if self.count_timer == self.trigger_time:
@@ -188,9 +197,6 @@ windowsper = WindowUnit(root)
 WindowTask = WindowTask(root)
 WindowWork = WindowWork(root)
 ButtonSetting = Setting(root)
-timer = Timer(root)
-
-
 
 root.mainloop()
 
