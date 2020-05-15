@@ -51,21 +51,21 @@ class WindowUnit():
         self.timer.timer()
         if self.timer.trigger_time == self.timer.count_timer:
             count = 1
-            while count <= len(self.list_unit_and_task):
-                for key in self.list_unit_and_task:
-                    lvl_unit = int(key[-2:])
-                    if self.list_unit_and_task[key] == []:
+            while count <= len(self.list_unit_and_task): # останавливаем работу когда все задачи удалены
+                for key in self.list_unit_and_task:# бежим по словарю
+                    lvl_unit = int(key[-2:])# вытаскиваем из кей значения производительности юнита от строка поэтому тащим срез
+                    if self.list_unit_and_task[key] == []:# костыль чтобы цикл работал когда остается одно не удаленная задача
                         count += 1
                         continue
-                    lvl_first_task = int(self.list_unit_and_task[key][0][-3:])
-                    rest_of_task = lvl_first_task - lvl_unit
-                    if rest_of_task <= 0:
-                        self.list_unit_and_task[key].pop(0)
+                    lvl_first_task = int(self.list_unit_and_task[key][0][-3:])# вытаскиваем производительность задачи , она тоже строка поэтому срез
+                    rest_of_task = lvl_first_task - lvl_unit # минусуем из сложности производительность
+                    if rest_of_task <= 0: # если задача выполнена те сложность меньше нуля
+                        self.list_unit_and_task[key].pop(0) # удаляем задачу , она первая в массиве
                         count = 0
-                    if rest_of_task > 0:
-                        inter_list_unit_and_task = self.list_unit_and_task[key][0][:-3]
-                        inter_list_unit_and_task = inter_list_unit_and_task + ' ' + str(rest_of_task)
-                        self.list_unit_and_task[key][0] = inter_list_unit_and_task
+                    if rest_of_task > 0: # если задача выполнена на до конца
+                        inter_list_task = self.list_unit_and_task[key][0][:-3] # вытаскиваем название задачи из строки отсекаем срезом сложность
+                        inter_list_task = inter_list_task + ' ' + str(rest_of_task) # добавляем коктенацией оставшееся значение сложности
+                        self.list_unit_and_task[key][0] = inter_list_task # заменяем в массисиве старый на вновь созданный с измененной сложностью
                         count = 0
         print(self.list_unit_and_task)
 
