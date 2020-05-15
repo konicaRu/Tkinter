@@ -19,14 +19,17 @@ class WindowUnit():
         self.button_new.grid(row=3, column=0, sticky='s')  # расположение кнопки New
         self.unit = Unit()  # ссылка на класс исполнители
         self.task = Task()  # ссылка на класс задачи
+        #self.timer = Timer()  # ссылка на класс задачи
         self.list_unit_and_task = {}  # массив для хранения исполнителей и задач
 
-    def unit_and_task_arr(self): # формируем  два списока исполнителей и задач self.list_unit_and_task-для работы и self.list_unit_and_task_to_display для отображения
+    def unit_and_task_arr(self):  # формируем  два списока исполнителей и задач self.list_unit_and_task-для работы и self.list_unit_and_task_to_display для отображения
         self.unit.unit_generate()  # запускаем в классе Unit функцию unit_generate(), формируем список исполнителей
         self.task.task_generate()  # # запускаем в классе Task функцию task_generate(), формируем список задач
         shift = 0
         for keys in self.unit.arr_unit:  # формируем рабочий словарь  self.list_unit_and_task вида {'Ivan 7': ['Пашет', 'Лудит', 'Закапывает'], 'Vasya 5': ['Сеет', 'Паяяет', 'Откапывает']}
             self.list_unit_and_task[keys] = [self.task.arr_task[val] for val in range(shift, len(self.task.arr_task), len(self.unit.arr_unit))]  # генератор списков в словаре
+            # Первому ключу из self.unit.arr_unit присваивается первое значение из self.task.arr_task,
+            # второму -- вторая и т. д. N+1 - я задача снова назначается первому ключу, и так далее по кругу.
             shift += 1
         # формируем отдельный словарь для отображения в программе  исполнитель и первая завдача в списке
         int_arr_unit = []
@@ -34,12 +37,12 @@ class WindowUnit():
             int_arr_unit.append(key)
         int_arr_task = []
         for key in self.list_unit_and_task:  # формируем список из первых задач
-            int_arr_task.append(self.list_unit_and_task[key][0])  # обьеденяем два списка в словарь
+            int_arr_task.append(self.list_unit_and_task[key][0])
         self.list_unit_and_task_to_display = []
-        for i in range(len(int_arr_unit)):
-            inter_arr_displey =[str(int_arr_unit[i]) +' '+ str(int_arr_task[i])]
+        for i in range(len(int_arr_unit)):  # обьеденяем два списка в один вложенный список [['Алекс 8', 'Выпил 8'], ['Абросимова 9', 'Сьел 9'], [' Алекс 7', ' Вдохнул 7']]
+            inter_arr_displey = str(int_arr_unit[i]) + ' ' + str(int_arr_task[i])
             self.list_unit_and_task_to_display.append(inter_arr_displey)
-           # это обьединялка в один словарь self.list_unit_and_task_to_display{}
+        # это обьединялка в один словарь self.list_unit_and_task_to_display{}
         for unit in self.list_unit_and_task_to_display:  # пробегаем по словарю передаем в программу
             self.listbox.insert(END, unit)
 
@@ -56,12 +59,9 @@ class WindowTask():
     def click_on_key(self, event):
         cursor = list(self.window_unit.listbox.curselection())  # Метод   curselection()   позволяет   получить   в   виде   кортежа   индексы   выбранных   элементов экземпляра Listbox.
         for keys in cursor:
-            print(cursor)
-            print(keys)
-            inter_list_unit_and_task = list(self.window_unit.list_unit_and_task.values())
-            if True :
+            inter_list_unit_and_task = list(self.window_unit.list_unit_and_task.values())  # можно отобразить список задач без {} фигурных скобок инф в Tkinter2
+            if True:
                 self.field_result['text'] = inter_list_unit_and_task[keys]
-
 
 
 class WindowWork():
@@ -154,15 +154,18 @@ class Setting():  # окно настройка
 
 
 class Timer():  # класс таймер
-    def __init__(self, main):
+    def __init__(self, time = 5):
         self.count_timer = 0
-        self.response_time = 5
+        self.trigger_time = 5
+
+        WindowUnit.unit.arr_unit
 
     def timer(self):
-        while self.count_timer < self.response_time:
+        while len(WindowUnit.unit.arr_unit) > 0:
             time.sleep(1)  # in seconds
             self.count_timer += 1
-            print(self.count_timer, type(self.count_timer), type(self.response_time))
+            if self.count_timer == self.trigger_time:
+                self.count_timer = 0
 
 
 # class GenereteRandom():
@@ -185,10 +188,10 @@ class Timer():  # класс таймер
 windowsper = WindowUnit(root)
 WindowTask = WindowTask(root)
 WindowWork = WindowWork(root)
-
 ButtonSetting = Setting(root)
 timer = Timer(root)
-unit = Unit(root)
+
+
 
 root.mainloop()
 
