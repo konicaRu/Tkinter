@@ -45,16 +45,29 @@ class WindowUnit():
         # это обьединялка в один словарь self.list_unit_and_task_to_display{}
         for unit in self.list_unit_and_task_to_display:  # пробегаем по словарю передаем в программу
             self.listbox.insert(END, unit)
-        self.work_unit() # запускаем функцию работу исполнителей
-    def work_unit(self, ):
+        self.work_unit()  # запускаем функцию работу исполнителей
+
+    def work_unit(self):
         self.timer.timer()
-        while len(self.list_unit_and_task[key]) > 0:
-            if  self.timer.trigger_time == self.timer.count_timer:
+        if self.timer.trigger_time == self.timer.count_timer:
+            count = 1
+            while count <= len(self.list_unit_and_task):
                 for key in self.list_unit_and_task:
-                    lvl_unit  =  int(key[-2:])
-                    lvl_first_task = self.list_unit_and_task[key][0][-3:]
+                    lvl_unit = int(key[-2:])
+                    if self.list_unit_and_task[key] == []:
+                        count += 1
+                        continue
+                    lvl_first_task = int(self.list_unit_and_task[key][0][-3:])
                     rest_of_task = lvl_first_task - lvl_unit
-        pass
+                    if rest_of_task <= 0:
+                        self.list_unit_and_task[key].pop(0)
+                        count = 0
+                    if rest_of_task > 0:
+                        inter_list_unit_and_task = self.list_unit_and_task[key][0][:-3]
+                        inter_list_unit_and_task = inter_list_unit_and_task + ' ' + str(rest_of_task)
+                        self.list_unit_and_task[key][0] = inter_list_unit_and_task
+                        count = 0
+        print(self.list_unit_and_task)
 
 class WindowTask():
     def __init__(self, main):
@@ -169,7 +182,7 @@ class Timer():  # класс таймер
         self.trigger_time = time
 
     def timer(self):
-        while True:
+        while self.count_timer < 10:
             time.sleep(1)  # in seconds
             self.count_timer += 1
             if self.count_timer == self.trigger_time:
