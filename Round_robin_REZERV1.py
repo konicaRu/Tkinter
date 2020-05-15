@@ -20,14 +20,15 @@ class WindowUnit():
         self.unit = Unit()  # ссылка на класс исполнители
         self.task = Task()  # ссылка на класс задачи
         #self.timer = Timer()  # ссылка на класс задачи
+        self.keys = '' # переменая для таймера чтобы получить доступ к списку задач self.list_unit_and_task[self.keys]
         self.list_unit_and_task = {}  # массив для хранения исполнителей и задач
 
     def unit_and_task_arr(self):  # формируем  два списока исполнителей и задач self.list_unit_and_task-для работы и self.list_unit_and_task_to_display для отображения
         self.unit.unit_generate()  # запускаем в классе Unit функцию unit_generate(), формируем список исполнителей
         self.task.task_generate()  # # запускаем в классе Task функцию task_generate(), формируем список задач
         shift = 0
-        for keys in self.unit.arr_unit:  # формируем рабочий словарь  self.list_unit_and_task вида {'Ivan 7': ['Пашет', 'Лудит', 'Закапывает'], 'Vasya 5': ['Сеет', 'Паяяет', 'Откапывает']}
-            self.list_unit_and_task[keys] = [self.task.arr_task[val] for val in range(shift, len(self.task.arr_task), len(self.unit.arr_unit))]  # генератор списков в словаре
+        for self.keys in self.unit.arr_unit:  # формируем рабочий словарь  self.list_unit_and_task вида {'Ivan 7': ['Пашет', 'Лудит', 'Закапывает'], 'Vasya 5': ['Сеет', 'Паяяет', 'Откапывает']}
+            self.list_unit_and_task[self.keys] = [self.task.arr_task[val] for val in range(shift, len(self.task.arr_task), len(self.unit.arr_unit))]  # генератор списков в словаре
             # Первому ключу из self.unit.arr_unit присваивается первое значение из self.task.arr_task,
             # второму -- вторая и т. д. N+1 - я задача снова назначается первому ключу, и так далее по кругу.
             shift += 1
@@ -158,10 +159,8 @@ class Timer():  # класс таймер
         self.count_timer = 0
         self.trigger_time = 5
 
-        WindowUnit.unit.arr_unit
-
     def timer(self):
-        while len(WindowUnit.unit.arr_unit) > 0:
+        while len(WindowUnit.self.list_unit_and_task[WindowUnit.keys]) > 0:
             time.sleep(1)  # in seconds
             self.count_timer += 1
             if self.count_timer == self.trigger_time:
