@@ -4,13 +4,13 @@ import time
 
 root = Tk()
 root.title('Round robin')  # надпись на верху
-root.geometry('600x300+300+200')  # ширина=500, высота=400, x=300, y=200 размер окна
+root.geometry('850x500+300+200')  # ширина=500, высота=400, x=300, y=200 размер окна
 root.resizable(True, False)  # размер окна может быть изменён только по горизонтали
 
 
 class WindowUnit():
     def __init__(self, main):
-        self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пуктами из листа list_performer
+        self.listbox = Listbox(main, height=25, width=35, selectmode=EXTENDED)  # список с пунктами из листа list_performer
         self.field_call = Label(main, text='Список исполнителей', width=18, font=10, justify=LEFT)
         self.field_call.grid(row=0, column=0)
         self.listbox.grid(row=1, column=0)
@@ -19,7 +19,8 @@ class WindowUnit():
         self.button_new.grid(row=3, column=0, sticky='s')  # расположение кнопки New
         self.unit = Unit()  # ссылка на класс исполнители
         self.task = Task()  # ссылка на класс задачи
-        self.timer = Timer()  # ссылка на класс задачи
+        self.count_timer = 0  # счетчик таймера
+        self.trigger_time = 5  # время срабатывания
         self.list_unit_and_task = {}  # массив для хранения исполнителей и задач
 
     def unit_and_task_arr(self):  # формируем  два списока исполнителей и задач self.list_unit_and_task-для работы и self.list_unit_and_task_to_display для отображения
@@ -45,33 +46,43 @@ class WindowUnit():
         # это обьединялка в один словарь self.list_unit_and_task_to_display{}
         for unit in self.list_unit_and_task_to_display:  # пробегаем по словарю передаем в программу
             self.listbox.insert(END, unit)
-        self.work_unit()  # запускаем функцию работу исполнителей
+        self.timer()  # запускаем функцию работу исполнителей
 
-    def work_unit(self):
-        self.timer.timer()
-        if self.timer.trigger_time == self.timer.count_timer:
-            count = 1
-            while count <= len(self.list_unit_and_task): # останавливаем работу когда все задачи удалены
-                for key in self.list_unit_and_task:# бежим по словарю
-                    lvl_unit = int(key[-2:])# вытаскиваем из кей значения производительности юнита от строка поэтому тащим срез
-                    if self.list_unit_and_task[key] == []:# костыль чтобы цикл работал когда остается одно не удаленная задача
-                        count += 1
-                        continue
-                    lvl_first_task = int(self.list_unit_and_task[key][0][-3:])# вытаскиваем производительность задачи , она тоже строка поэтому срез
-                    rest_of_task = lvl_first_task - lvl_unit # минусуем из сложности производительность
-                    if rest_of_task <= 0: # если задача выполнена те сложность меньше нуля
-                        self.list_unit_and_task[key].pop(0) # удаляем задачу , она первая в массиве
-                        count = 0
-                    if rest_of_task > 0: # если задача выполнена на до конца
-                        inter_list_task = self.list_unit_and_task[key][0][:-3] # вытаскиваем название задачи из строки отсекаем срезом сложность
-                        inter_list_task = inter_list_task + ' ' + str(rest_of_task) # добавляем коктенацией оставшееся значение сложности
-                        self.list_unit_and_task[key][0] = inter_list_task # заменяем в массисиве старый на вновь созданный с измененной сложностью
-                        count = 0
-        print(self.list_unit_and_task)
+    def timer(self):
+        self.work_unit()
+        while True:
+            time.sleep(1)  # in seconds
+            self.count_timer += 1
+            print(self.count_timer)
+            if self.count_timer == self.trigger_time:
+                self.count_timer = 0
+                self.work_unit()
+
+    def work_unit(self):  # моделируем работу # на каждое срабатывание таймера бежим по рабочему словарю вычитаем из сложности первой задачи производительность юнита
+        count = 0
+        for key in self.list_unit_and_task:  # бежим по словарю
+            if self.list_unit_and_task[key] != []:  # останавливаем работу когда все задачи удалены
+                count += 1
+            if count == 0:
+                break
+        for key in self.list_unit_and_task:  # бежим по словарю
+            if self.list_unit_and_task[key] == []:
+                continue
+            lvl_unit = int(key[-2:])  # вытаскиваем из кей значения производительности юнита от строка поэтому тащим срез
+            lvl_first_task = int(self.list_unit_and_task[key][0][-3:])  # вытаскиваем производительность задачи , она тоже строка поэтому срез
+            rest_of_task = lvl_first_task - lvl_unit  # минусуем из сложности производительность
+            if rest_of_task <= 0:  # если задача выполнена те сложность меньше нуля
+                self.list_unit_and_task[key].pop(0)  # удаляем задачу , она первая в массиве
+
+            if rest_of_task > 0:
+                inter_list_unit_and_task = self.list_unit_and_task[key][0][:-3]
+                inter_list_unit_and_task = inter_list_unit_and_task + ' ' + str(rest_of_task)
+                self.list_unit_and_task[key][0] = inter_list_unit_and_task
+
 
 class WindowTask():
     def __init__(self, main):
-        self.field_result = Label(main, height=5, width=25)  # список с пуктами из листа list
+        self.field_result = Label(main, height=25, width=55)  # список с пуктами из листа list
         self.field_call = Label(main, text='Список задач', width=18, font=10, justify=LEFT)
         self.field_call.grid(row=0, column=1)
         self.field_result.grid(row=1, column=1)
@@ -89,7 +100,7 @@ class WindowTask():
 
 class WindowWork():
     def __init__(self, main):
-        self.listbox = Listbox(main, height=5, width=25, selectmode=EXTENDED)  # список с пунктами из листа list
+        self.listbox = Listbox(main, height=25, width=35, selectmode=EXTENDED)  # список с пунктами из листа list
         self.list = []  # список пунктов в списке
         for i in self.list:
             self.listbox.insert(END, i)
@@ -176,19 +187,6 @@ class Setting():  # окно настройка
         self.close_win_setting = self.window_open.destroy()  # команда закрывающая окно
 
 
-class Timer():  # класс таймер
-    def __init__(self, time=5):
-        self.count_timer = 0
-        self.trigger_time = time
-
-    def timer(self):
-        while self.count_timer < 10:
-            time.sleep(1)  # in seconds
-            self.count_timer += 1
-            if self.count_timer == self.trigger_time:
-                self.count_timer = 0
-
-
 # class GenereteRandom():
 #     first_names = ('Варвара', 'Анникова', 'Наталья', 'Лидия', 'Федор', 'Якуба', 'Агафона', 'Римма', 'Светлана', 'Рената', 'Анна', 'Алекс', 'Жанна', 'Ким', 'Мария', 'Марфа')
 #
@@ -206,7 +204,7 @@ class Timer():  # класс таймер
 #     # group=[" ".join(random.choice(first_names)+" "+random.choice(last_names) for _ in range(3))] генерировать количество в массив
 #     print(name_group, task_group)
 # ButtonNew = New(root)
-windowsper = WindowUnit(root)
+window_unit = WindowUnit(root)
 WindowTask = WindowTask(root)
 WindowWork = WindowWork(root)
 ButtonSetting = Setting(root)
