@@ -33,6 +33,7 @@ class WindowUnit():
         self.trigger_time = 2  # время срабатывания
         self.list_unit_and_task = {}  # массив для хранения исполнителей и задач
         self.count_work_unit = 0  # счетчик остатка задач в функции work_unit
+        self.timer_count_operations = 0 # счетчик количества срабатываний таймера
 
 
     def unit_and_task_arr(self):  # формируем  два списока исполнителей и задач self.list_unit_and_task-для работы и self.list_unit_and_task_to_display для отображения
@@ -67,7 +68,10 @@ class WindowUnit():
             int_arr_unit.append(key)
         int_arr_task = []
         for key in self.list_unit_and_task:  # формируем список из первых задач
-            int_arr_task.append(self.list_unit_and_task[key][0])
+            try:
+                int_arr_task.append(self.list_unit_and_task[key][0])
+            except IndexError:
+               root.after_cancel(timer_after_id)
         self.list_unit_and_task_to_display = []
         for i in range(len(int_arr_unit)):  # обьеденяем два списка в один вложенный список [['Алекс 8', 'Выпил 8'], ['Абросимова 9', 'Сьел 9'], [' Алекс 7', ' Вдохнул 7']]
             inter_arr_displey = str(int_arr_unit[i]) + ' ' + str(int_arr_task[i])
@@ -82,6 +86,7 @@ class WindowUnit():
         count_timer += 1
         print(count_timer)
         if count_timer == self.trigger_time: #
+            self.timer_count_operations += 1
             self.work_unit()
             for key in self.list_unit_and_task:  # бежим по словарю проверяем остались  ли не выполненные задачи остались ли не пустые value
                 if self.list_unit_and_task[key] != []:  # останавливаем работу когда все задачи удалены
@@ -105,7 +110,7 @@ class WindowUnit():
             rest_of_task = lvl_first_task - lvl_unit  # минусуем из сложности производительность
             if rest_of_task <= 0:  # если задача выполнена те сложность меньше нуля
                 self.list_ready_task = []  # список выполненных задач
-                self.list_ready_task.append('Исполнитель-' + ' ' + key[:-3] + ', ' + 'Задача-' + ' ' + self.list_unit_and_task[key][0][:-3])
+                self.list_ready_task.append('Работник-' + ' ' + key[:-3] + ', ' + 'Задача-' + ' ' + self.list_unit_and_task[key][0][:-3]+''+'t='+str(self.timer_count_operations))
                 for i in self.list_ready_task:
                     self.listbox_ready_task.insert(END, i)
                 print(self.list_ready_task)
