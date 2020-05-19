@@ -12,10 +12,15 @@ count_timer = 0  # счетчик таймера
 
 class WindowUnit():
     def __init__(self, main):
-        self.listbox = Listbox(main, height=25, width=35, selectmode=EXTENDED)  # список с пунктами из листа list_performer
+        self.listbox = Listbox(main, height=25, width=35, selectmode=EXTENDED)  # список с пунктами из листа list_performer список исполнителей и задач
         self.field_call = Label(main, text='Список исполнителей', width=18, font=10, justify=LEFT)
         self.field_call.grid(row=0, column=0)
         self.listbox.grid(row=1, column=0)
+
+        self.listbox_ready_task = Listbox(main, height=25, width=35, selectmode=EXTENDED)  # список выполненных задач с пунктами из листа list
+        self.field_call_ready_task = Label(main, text='Выполненные задачи', width=17, font=10, justify=LEFT)
+        self.field_call_ready_task.grid(row=0, column=2)
+        self.listbox_ready_task.grid(row=1, column=2)
 
         self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_and_task_arr)  # кнопка New на первом листе
         self.button_new.grid(row=3, column=0, sticky='s')  # расположение кнопки New
@@ -28,6 +33,7 @@ class WindowUnit():
         self.trigger_time = 2  # время срабатывания
         self.list_unit_and_task = {}  # массив для хранения исполнителей и задач
         self.count_work_unit = 0  # счетчик остатка задач в функции work_unit
+
 
     def unit_and_task_arr(self):  # формируем  два списока исполнителей и задач self.list_unit_and_task-для работы и self.list_unit_and_task_to_display для отображения
         self.unit.unit_generate()  # запускаем в классе Unit функцию unit_generate(), формируем список исполнителей
@@ -76,15 +82,17 @@ class WindowUnit():
         count_timer += 1
         print(count_timer)
         if count_timer == self.trigger_time: #
-            self.update_display()
+            self.work_unit()
             for key in self.list_unit_and_task:  # бежим по словарю проверяем остались  ли не выполненные задачи остались ли не пустые value
                 if self.list_unit_and_task[key] != []:  # останавливаем работу когда все задачи удалены
                     self.count_work_unit += 1
+                    print('turn on')
                 if self.count_work_unit == 0: # если 0 значит задач нет
                     root.after_cancel(timer_after_id) # останавливаем работу когда все задачи удалены
-            count_timer = 0
-            self.work_unit()
-            self.count_work_unit = 0
+                    print('turn off')
+                count_timer = 0
+                self.update_display()
+                self.count_work_unit = 0
 
 
     def work_unit(self):  # моделируем работу # на каждое срабатывание таймера бежим по рабочему словарю вычитаем из сложности первой задачи производительность юнита
@@ -96,8 +104,12 @@ class WindowUnit():
             lvl_first_task = int(self.list_unit_and_task[key][0][-3:])  # вытаскиваем производительность задачи , она тоже строка поэтому срез
             rest_of_task = lvl_first_task - lvl_unit  # минусуем из сложности производительность
             if rest_of_task <= 0:  # если задача выполнена те сложность меньше нуля
+                self.list_ready_task = []
+                self.list_ready_task.append('Исполнитель' + ' ' + key + ' ' + 'Задача' + ' ' + self.list_unit_and_task[key][0])
+                for i in self.list_ready_task:
+                    self.listbox_ready_task.insert(END, i)
+                print(self.list_ready_task)
                 self.list_unit_and_task[key].pop(0)  # удаляем задачу , она первая в массиве
-
             if rest_of_task > 0:
                 inter_list_unit_and_task = self.list_unit_and_task[key][0][:-3]
                 inter_list_unit_and_task_1 = inter_list_unit_and_task + ' ' + str(rest_of_task)
@@ -125,16 +137,15 @@ class WindowTask():
                 self.field_result['text'] = inter_list_unit_and_task[keys]
 
 
-class WindowWork():
-    def __init__(self, main):
-        self.listbox = Listbox(main, height=25, width=35, selectmode=EXTENDED)  # список с пунктами из листа list
-        self.list = []  # список пунктов в списке
-        for i in self.list:
-            self.listbox.insert(END, i)
-        self.field_call = Label(main, text='Список работ', width=15, font=10, justify=LEFT)
-
-        self.field_call.grid(row=0, column=2)
-        self.listbox.grid(row=1, column=2)
+# class WindowWork():
+#     def __init__(self, main):
+#         self.listbox_ready_task = Listbox(main, height=25, width=35, selectmode=EXTENDED)  # список с пунктами из листа list
+#         self.list_ready_task = []  # список пунктов в списке
+#         for i in self.list_ready_task:
+#             self.listbox_ready_task.insert(END, i)
+#         self.field_call_ready_task = Label(main, text='Выполненные задачи', width=17, font=10, justify=LEFT)
+#         self.field_call_ready_task.grid(row=0, column=2)
+#         self.listbox_ready_task.grid(row=1, column=2)
 
 
 class Unit():  # класс исполнитель
@@ -205,7 +216,7 @@ class Setting():  # окно настройка
 
 window_unit = WindowUnit(root)
 WindowTask = WindowTask(root)
-WindowWork = WindowWork(root)
+#WindowWork = WindowWork(root)
 ButtonSetting = Setting(root)
 
 root.mainloop()
