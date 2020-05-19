@@ -37,6 +37,7 @@ class ListOfCities():
         self.list = ["Москва", "Санкт-Петербург", "Саратов", "Омск"]  # список пунктов в списке
         for i in self.list:
             self.listbox.insert(END, i)
+
         self.field_call = Label(main, text='Год основания городов', width=27, font=15)
         self.field_result = Label(main, width=27, font=15)
         self.state_varible = BooleanVar()
@@ -54,7 +55,7 @@ class ListOfCities():
 
     def click_on_citi(self, event):
         if self.state_varible.get() == 1:
-            cursor = list(self.listbox.curselection())#Метод   curselection()   позволяет   получить   в   виде   кортежа   индексы   выбранных   элементов экземпляра Listbox.
+            cursor = list(self.listbox.curselection()) # Метод   curselection()   позволяет   получить   в   виде   кортежа   индексы   выбранных   элементов экземпляра Listbox.
             for our_cities in cursor:
                 if self.list[our_cities] == "Москва":
                     self.field_result['text'] = 'MCXLVII год'
