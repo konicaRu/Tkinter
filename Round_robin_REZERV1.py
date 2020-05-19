@@ -6,7 +6,8 @@ root = Tk()
 root.title('Round robin')  # надпись на верху
 root.geometry('850x500+300+200')  # ширина=500, высота=400, x=300, y=200 размер окна
 root.resizable(True, False)  # размер окна может быть изменён только по горизонтали
-
+timer_after_id = '' # переменная таймера ведет счет
+count_timer = 0  # счетчик таймера
 
 class WindowUnit():
     def __init__(self, main):
@@ -17,9 +18,12 @@ class WindowUnit():
 
         self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_and_task_arr)  # кнопка New на первом листе
         self.button_new.grid(row=3, column=0, sticky='s')  # расположение кнопки New
+        self.button_pause = Button(main, text='Pause', width=16, font=10)
+        self.button_pause.grid(row=3, column=1)
         self.unit = Unit()  # ссылка на класс исполнители
         self.task = Task()  # ссылка на класс задачи
-        self.count_timer = 0  # счетчик таймера
+        # self.timer_after_id = '' # переменная таймера ведет счет
+        # self.count_timer = 0  # счетчик таймера
         self.trigger_time = 5  # время срабатывания
         self.list_unit_and_task = {}  # массив для хранения исполнителей и задач
 
@@ -46,17 +50,16 @@ class WindowUnit():
         # это обьединялка в один словарь self.list_unit_and_task_to_display{}
         for unit in self.list_unit_and_task_to_display:  # пробегаем по словарю передаем в программу
             self.listbox.insert(END, unit)
-        self.timer()  # запускаем функцию работу исполнителей
+        self.timer()  # запускаем функцию работу таймера
 
     def timer(self):
-        self.work_unit()
-        while True:
-            time.sleep(1)  # in seconds
-            self.count_timer += 1
-            print(self.count_timer)
-            if self.count_timer == self.trigger_time:
-                self.count_timer = 0
-                self.work_unit()
+        global timer_after_id, count_timer
+        timer_after_id = root.after(1000, self.timer)
+        count_timer += 1
+        print(count_timer)
+        if count_timer == self.trigger_time:
+            count_timer = 0
+            self.work_unit()
 
     def work_unit(self):  # моделируем работу # на каждое срабатывание таймера бежим по рабочему словарю вычитаем из сложности первой задачи производительность юнита
         count = 0
@@ -76,8 +79,8 @@ class WindowUnit():
 
             if rest_of_task > 0:
                 inter_list_unit_and_task = self.list_unit_and_task[key][0][:-3]
-                inter_list_unit_and_task = inter_list_unit_and_task + ' ' + str(rest_of_task)
-                self.list_unit_and_task[key][0] = inter_list_unit_and_task
+                inter_list_unit_and_task_1 = inter_list_unit_and_task + ' ' + str(rest_of_task)
+                self.list_unit_and_task[key][0] = inter_list_unit_and_task_1
 
 
 class WindowTask():
@@ -108,17 +111,6 @@ class WindowWork():
 
         self.field_call.grid(row=0, column=2)
         self.listbox.grid(row=1, column=2)
-
-
-# class New():
-#     def __init__(self, main):
-#         self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_arr)
-#         self.button_new.grid(row=3, column=0, sticky='s')
-#         self.arr_unit = Window_performer(main).list_performer
-#
-#     def unit_arr(self):
-#         for i in range(8):
-#             self.arr_unit.insert(END, i)
 
 
 class Unit():  # класс исполнитель
@@ -187,23 +179,6 @@ class Setting():  # окно настройка
         self.close_win_setting = self.window_open.destroy()  # команда закрывающая окно
 
 
-# class GenereteRandom():
-#     first_names = ('Варвара', 'Анникова', 'Наталья', 'Лидия', 'Федор', 'Якуба', 'Агафона', 'Римма', 'Светлана', 'Рената', 'Анна', 'Алекс', 'Жанна', 'Ким', 'Мария', 'Марфа')
-#
-#     last_names = ('Юневича', 'Гайдукова', 'Мухова', 'Левченко', 'Щербатыха', 'Львова', 'Щитта', 'Яндуткина', 'Шелыгина', 'Ахременко', 'Абросимова', 'Аронова', 'Трухина', 'Оспищева')
-#
-#     name_group = "".join(random.choice(first_names) + " " + random.choice(last_names))
-#     # group=" ".join(random.choice(first_names)+" "+random.choice(last_names) for _ in range(3)) генерировать количество
-#     # group=[" ".join(random.choice(first_names)+" "+random.choice(last_names) for _ in range(3))] генерировать количество в массив
-#
-#     task_first_names = ('Пашет', 'Сеет', 'Собирает', 'Починяет', 'Лудит', 'Паяяет', 'Культивирует', 'Копает', 'Закапывает', 'Откапывает', 'Режет', 'Чистит', 'Полирует', 'Выращивает', 'Боронует', 'Удобряет')
-#     task_last_names = ('рис', 'гречку', 'яблоки', 'примус', 'картошку', 'яму', 'землю', 'помидоры', 'огурцы', 'детали', 'репку', 'машину', 'трактор', 'вишню')
-#
-#     task_group = "".join(random.choice(task_first_names) + " " + random.choice(task_last_names))
-#     # group=" ".join(random.choice(first_names)+" "+random.choice(last_names) for _ in range(3)) генерировать количество
-#     # group=[" ".join(random.choice(first_names)+" "+random.choice(last_names) for _ in range(3))] генерировать количество в массив
-#     print(name_group, task_group)
-# ButtonNew = New(root)
 window_unit = WindowUnit(root)
 WindowTask = WindowTask(root)
 WindowWork = WindowWork(root)
