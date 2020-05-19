@@ -17,8 +17,8 @@ class WindowUnit():
         self.field_call.grid(row=0, column=0)
         self.listbox.grid(row=1, column=0)
 
-        self.listbox_ready_task = Listbox(main, height=25, width=35, selectmode=EXTENDED)  # список выполненных задач с пунктами из листа list
-        self.field_call_ready_task = Label(main, text='Выполненные задачи', width=17, font=10, justify=LEFT)
+        self.listbox_ready_task = Listbox(main, height=25, width=45, selectmode=EXTENDED)  # список выполненных задач с пунктами из листа list
+        self.field_call_ready_task = Label(main, text='Выполненные задачи', width=25, font=10, justify=LEFT)
         self.field_call_ready_task.grid(row=0, column=2)
         self.listbox_ready_task.grid(row=1, column=2)
 
@@ -104,8 +104,8 @@ class WindowUnit():
             lvl_first_task = int(self.list_unit_and_task[key][0][-3:])  # вытаскиваем производительность задачи , она тоже строка поэтому срез
             rest_of_task = lvl_first_task - lvl_unit  # минусуем из сложности производительность
             if rest_of_task <= 0:  # если задача выполнена те сложность меньше нуля
-                self.list_ready_task = []
-                self.list_ready_task.append('Исполнитель' + ' ' + key + ' ' + 'Задача' + ' ' + self.list_unit_and_task[key][0])
+                self.list_ready_task = []  # список выполненных задач
+                self.list_ready_task.append('Исполнитель-' + ' ' + key[:-3] + ', ' + 'Задача-' + ' ' + self.list_unit_and_task[key][0][:-3])
                 for i in self.list_ready_task:
                     self.listbox_ready_task.insert(END, i)
                 print(self.list_ready_task)
