@@ -68,10 +68,10 @@ class WindowUnit():
             int_arr_unit.append(key)
         int_arr_task = []
         for key in self.list_unit_and_task:  # формируем список из первых задач
-            try:
+            if self.list_unit_and_task[key] == []:
+                int_arr_task.append('')
+            else:
                 int_arr_task.append(self.list_unit_and_task[key][0])
-            except IndexError:
-               root.after_cancel(timer_after_id)
         self.list_unit_and_task_to_display = []
         for i in range(len(int_arr_unit)):  # обьеденяем два списка в один вложенный список [['Алекс 8', 'Выпил 8'], ['Абросимова 9', 'Сьел 9'], [' Алекс 7', ' Вдохнул 7']]
             inter_arr_displey = str(int_arr_unit[i]) + ' ' + str(int_arr_task[i])
@@ -98,14 +98,15 @@ class WindowUnit():
                 count_timer = 0
                 self.update_display()
                 self.count_work_unit = 0
-
+    def pause_timer(self):
+        root.after_cancel(timer_after_id)
 
     def work_unit(self):  # моделируем работу # на каждое срабатывание таймера бежим по рабочему словарю вычитаем из сложности первой задачи производительность юнита
 
         for key in self.list_unit_and_task:  # бежим по словарю
             if self.list_unit_and_task[key] == []:
                 continue
-            lvl_unit = int(key[-2:])  # вытаскиваем из кей значения производительности юнита от строка поэтому тащим срез
+            lvl_unit = int(key[-3:])  # вытаскиваем из кей значения производительности юнита от строка поэтому тащим срез
             lvl_first_task = int(self.list_unit_and_task[key][0][-3:])  # вытаскиваем производительность задачи , она тоже строка поэтому срез
             rest_of_task = lvl_first_task - lvl_unit  # минусуем из сложности производительность
             if rest_of_task <= 0:  # если задача выполнена те сложность меньше нуля
@@ -115,13 +116,44 @@ class WindowUnit():
                     self.listbox_ready_task.insert(END, i)
                 print(self.list_ready_task)
                 self.list_unit_and_task[key].pop(0)  # удаляем задачу , она первая в массиве
+                # с вероятностью 50 % (выпадет 1 или 2) србатывает фукция сменя первых задач в списке по кругу def change_task
+
+                # for key in self.list_unit_and_task:
+                #     if self.list_unit_and_task[key] != []
+                # if random.randint(1, 2) == 2: # с вероятностью 50 % (выпадет 1 или 2) србатывает фукция сменя первых задач в списке по кругу def change_task
+                #      self.change_task()
             if rest_of_task > 0:
                 inter_list_unit_and_task = self.list_unit_and_task[key][0][:-3]
                 inter_list_unit_and_task_1 = inter_list_unit_and_task + ' ' + str(rest_of_task)
                 self.list_unit_and_task[key][0] = inter_list_unit_and_task_1
 
-    def pause_timer(self):
-        root.after_cancel(timer_after_id)
+    def change_task(self):  # меняем в списке list_unit_and_task первые задачи местами
+        count_task = 1
+        count_key = 0
+        arr_keep_keys = []
+        for key in self.list_unit_and_task:
+            arr_keep_keys.append(key)
+
+        first_task = self.list_unit_and_task[arr_keep_keys[count_key]][0]
+
+        self.list_unit_and_task[arr_keep_keys[count_key]].pop(0)
+
+        for key in self.list_unit_and_task:
+            if count_task == len(self.list_unit_and_task):
+                if self.list_unit_and_task[key] == []:
+                    self.list_unit_and_task[key].append(first_task)
+                else:
+                    self.list_unit_and_task[key][0] = first_task
+                break
+            if self.list_unit_and_task[key] == []:
+                self.list_unit_and_task[key].append(self.list_unit_and_task[arr_keep_keys[count_task]][0])
+                count_task += 1
+                continue
+
+            self.list_unit_and_task[key][0] = self.list_unit_and_task[arr_keep_keys[count_task]][0]
+            self.list_unit_and_task[arr_keep_keys[count_task]].pop(0)
+            count_task += 1
+
 
 
 class WindowTask():
