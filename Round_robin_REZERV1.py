@@ -68,8 +68,8 @@ class WindowUnit():
             int_arr_unit.append(key)
         int_arr_task = []
         for key in self.list_unit_and_task:  # формируем список из первых задач
-            if self.list_unit_and_task[key] == []:
-                int_arr_task.append('')
+            if self.list_unit_and_task[key] == []: # предучматриваем момент если список задач уже пуст
+                int_arr_task.append('') # завиваем место пробелом чтобы ниже не выскакивало на диапазон
             else:
                 int_arr_task.append(self.list_unit_and_task[key][0])
         self.list_unit_and_task_to_display = []
@@ -90,14 +90,16 @@ class WindowUnit():
             self.work_unit()
             for key in self.list_unit_and_task:  # бежим по словарю проверяем остались  ли не выполненные задачи остались ли не пустые value
                 if self.list_unit_and_task[key] != []:  # останавливаем работу когда все задачи удалены
-                    self.count_work_unit += 1
+                    self.count_work_unit += 1 #  почему то не удаляет все задачи срабатывает раньше чем они удалены
                     print('turn on')
-                if self.count_work_unit == 0: # если 0 значит задач нет
+            if self.count_work_unit == 0: # если 0 значит задач нет
                     root.after_cancel(timer_after_id) # останавливаем работу когда все задачи удалены
-                    print('turn off')
-                count_timer = 0
+                    print('turn off = ', self.list_unit_and_task)
+                    count_timer = 0
+            if self.count_work_unit != 0:
                 self.update_display()
                 self.count_work_unit = 0
+                count_timer = 0
     def pause_timer(self):
         root.after_cancel(timer_after_id)
 
@@ -116,12 +118,15 @@ class WindowUnit():
                     self.listbox_ready_task.insert(END, i)
                 print(self.list_ready_task)
                 self.list_unit_and_task[key].pop(0)  # удаляем задачу , она первая в массиве
-                # с вероятностью 50 % (выпадет 1 или 2) србатывает фукция сменя первых задач в списке по кругу def change_task
-
-                # for key in self.list_unit_and_task:
-                #     if self.list_unit_and_task[key] != []
-                # if random.randint(1, 2) == 2: # с вероятностью 50 % (выпадет 1 или 2) србатывает фукция сменя первых задач в списке по кругу def change_task
-                #      self.change_task()
+                #с вероятностью 50 % (выпадет 1 или 2) србатывает фукция сменя первых задач в списке по кругу def change_task
+                work_unit_count_task = 0
+                for key in self.list_unit_and_task:
+                    if self.list_unit_and_task[key] != []:
+                        work_unit_count_task +=1
+                    if work_unit_count_task == len(self.list_unit_and_task) and random.randint(1, 2) == 2:
+                         # с вероятностью 50 % (выпадет 1 или 2) србатывает фукция сменя первых задач в списке по кругу def change_task
+                        self.change_task()
+                        print('change_task', self.list_unit_and_task)
             if rest_of_task > 0:
                 inter_list_unit_and_task = self.list_unit_and_task[key][0][:-3]
                 inter_list_unit_and_task_1 = inter_list_unit_and_task + ' ' + str(rest_of_task)
@@ -135,9 +140,7 @@ class WindowUnit():
             arr_keep_keys.append(key)
 
         first_task = self.list_unit_and_task[arr_keep_keys[count_key]][0]
-
         self.list_unit_and_task[arr_keep_keys[count_key]].pop(0)
-
         for key in self.list_unit_and_task:
             if count_task == len(self.list_unit_and_task):
                 if self.list_unit_and_task[key] == []:
