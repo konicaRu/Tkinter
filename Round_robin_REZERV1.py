@@ -1,6 +1,7 @@
 from tkinter import *
 import random
 import time
+
 #   КОЛИЧЕСТВА ЗАДАЧ ДОЛЖНО ХВАТАТЬ НА ВСЕХ ПРОИЗВОДИТЕЛЕЙ
 root = Tk()
 root.title('Round robin')  # надпись на верху
@@ -8,7 +9,9 @@ root.geometry('850x500+300+200')  # ширина=500, высота=400, x=300, y
 root.resizable(True, False)  # размер окна может быть изменён только по горизонтали
 timer_after_id = ''  # переменная таймера ведет счет
 count_timer = 0  # счетчик таймера
-turn_on_setting = 0 # флажок включения введения данных из окна сеттиннг чтобы вводить данные из него
+turn_on_setting = 0  # флажок включения введения данных из окна сеттиннг чтобы вводить данные из него
+trigger_time = 5
+
 
 class WindowUnit():
     def __init__(self, main):
@@ -30,15 +33,16 @@ class WindowUnit():
         self.button_new.grid(row=4, column=2, sticky='n')  # расположение кнопки New
         # self.unit = Unit()  # ссылка на класс исполнители
         self.task = Task()  # ссылка на класс задачи
-        self.setting = Setting(main) # ссылка на класс Setting
-        self.trigger_time = 3  # время срабатывания
+        self.setting = Setting(main)  # ссылка на класс Setting
+        # время срабатывания
         self.list_unit_and_task = {}  # массив для хранения исполнителей и задач
         self.count_work_unit = 0  # счетчик остатка задач в функции work_unit
-        self.timer_count_operations = 0 # счетчик количества срабатываний таймера
-        self.turn_on_setting = 0 # флажок включения окна сеттиннг чтобы вводить данные из него
+        self.timer_count_operations = 0  # счетчик количества срабатываний таймера
+        self.turn_on_setting = 0  # флажок включения окна сеттиннг чтобы вводить данные из него
+        # self.trigger_time = True
 
     def close_main_win(self):  # функция закрывающая окно по кнопке cancel
-            root.destroy()  # команда закрывающая окно
+        root.destroy()  # команда закрывающая окно
 
     def unit_and_task_arr(self):  # формируем  два списока исполнителей и задач self.list_unit_and_task-для работы и self.list_unit_and_task_to_display для отображения
         global turn_on_setting
@@ -71,7 +75,10 @@ class WindowUnit():
         # это обьединялка в один словарь self.list_unit_and_task_to_display{}
         for unit in self.list_unit_and_task_to_display:  # пробегаем по словарю передаем в программу
             self.listbox.insert(END, unit)
-        self.timer(self.trigger_time)  # запускаем функцию работу таймера
+        if turn_on_setting == 0:
+            self.timer()
+        if turn_on_setting == 1:
+            self.timer()  # запускаем функцию работу таймера
 
     def unit_generate(self, sum_min=1, sum_max=3, min_speed=30, max_speed=99):  # генерируем список исполнитерлей вида "Вася 5" случайным образом, где вася имя спонителя а 5 его производительность
         self.sum_unit_min = sum_min  # количество исполнителей
@@ -84,15 +91,15 @@ class WindowUnit():
         for i in range(self.sum_unit):
             self.arr_unit.append(random.choice(unit_names) + "  " + str(random.randint(self.min_speed_unit, self.max_speed_unit)))
 
-    def update_display (self): # обновляем отображение в первом окне при срабатывани таймера
-        self.listbox.delete(0, END) # очищаем self.listbox чтобы заново заполнить его
+    def update_display(self):  # обновляем отображение в первом окне при срабатывани таймера
+        self.listbox.delete(0, END)  # очищаем self.listbox чтобы заново заполнить его
         int_arr_unit = []
         for key in self.list_unit_and_task:  # формируем список из ключей
             int_arr_unit.append(key)
         int_arr_task = []
         for key in self.list_unit_and_task:  # формируем список из первых задач
-            if self.list_unit_and_task[key] == []: # предучматриваем момент если список задач уже пуст
-                int_arr_task.append('') # завиваем место пробелом чтобы ниже не выскакивало на диапазон
+            if self.list_unit_and_task[key] == []:  # предучматриваем момент если список задач уже пуст
+                int_arr_task.append('')  # завиваем место пробелом чтобы ниже не выскакивало на диапазон
             else:
                 int_arr_task.append(self.list_unit_and_task[key][0])
         self.list_unit_and_task_to_display = []
@@ -103,28 +110,33 @@ class WindowUnit():
         for unit in self.list_unit_and_task_to_display:  # пробегаем по словарю передаем в программу
             self.listbox.insert(END, unit)
 
-    def timer(self, timer_trigger=2):
-        self.trigger_time = timer_trigger
-        global timer_after_id, count_timer
-        timer_after_id = root.after(1000, self.timer) # таймер срабатывет каждые 1000 миллисекунд или 1 секунда
+    def timer(self):
+        global count_timer, timer_after_id, trigger_time
+        timer_after_id = root.after(1000, self.timer)  # таймер срабатывет каждые 1000 миллисекунд или 1 секунда
         count_timer += 1
         print(count_timer)
-        if count_timer == self.trigger_time: #
-            self.timer_count_operations += 1 # счетчик наличия задач
-            self.work_unit()
-            for key in self.list_unit_and_task:  # бежим по словарю проверяем остались  ли не выполненные задачи остались ли не пустые value
-                if self.list_unit_and_task[key] != []:  # останавливаем работу когда все задачи удалены
-                    self.count_work_unit += 1 #  почему то не удаляет все задачи срабатывает раньше чем они удалены
-                    print('turn on')
-            if self.count_work_unit == 0: # если 0 значит задач нет
-                self.update_display()
-                root.after_cancel(timer_after_id) # останавливаем работу когда все задачи удалены
-                print('turn off = ', self.list_unit_and_task)
-                count_timer = 0
-            if self.count_work_unit != 0:#продолжаем  работу если задачи еще остались
-                self.update_display() # обновдяем первое окно
-                self.count_work_unit = 0 #
-                count_timer = 0
+        if count_timer == trigger_time:
+            print(trigger_time)
+            self.timer_check()
+            count_timer = 0
+
+    def timer_check(self):
+        global count_timer, trigger_time
+        self.timer_count_operations += 1  # счетчик наличия задач
+        self.work_unit()
+        for key in self.list_unit_and_task:  # бежим по словарю проверяем остались  ли не выполненные задачи остались ли не пустые value
+            if self.list_unit_and_task[key] != []:  # останавливаем работу когда все задачи удалены
+                self.count_work_unit += 1  # почему то не удаляет все задачи срабатывает раньше чем они удалены
+                print('turn on')
+        if self.count_work_unit == 0:  # если 0 значит задач нет
+            self.update_display()
+            root.after_cancel(timer_after_id)  # останавливаем работу когда все задачи удалены
+            print('turn off = ', self.list_unit_and_task)
+            count_timer = 0
+        if self.count_work_unit != 0:  # продолжаем  работу если задачи еще остались
+            self.update_display()  # обновдяем первое окно
+            self.count_work_unit = 0  #
+            count_timer = 0
 
     def pause_timer(self):
         root.after_cancel(timer_after_id)
@@ -139,19 +151,19 @@ class WindowUnit():
             rest_of_task = lvl_first_task - lvl_unit  # минусуем из сложности производительность
             if rest_of_task <= 0:  # если задача выполнена те сложность меньше нуля
                 self.list_ready_task = []  # список выполненных задач
-                self.list_ready_task.append('Unit-' + ' ' + key[:-3] + ', ' + 'Task-' + ' ' + self.list_unit_and_task[key][0][:-3]+''+'t='+str(self.timer_count_operations))
+                self.list_ready_task.append('Unit-' + ' ' + key[:-3] + ', ' + 'Task-' + ' ' + self.list_unit_and_task[key][0][:-3] + '' + 't=' + str(self.timer_count_operations))
                 for i in self.list_ready_task:
                     self.listbox_ready_task.insert(END, i)
                 print(self.list_ready_task)
                 self.list_unit_and_task[key].pop(0)  # удаляем задачу , она первая в массиве
-                #с вероятностью 50 % (выпадет 1 или 2) србатывает фукция сменя первых задач в списке по кругу def change_task
+                # с вероятностью 50 % (выпадет 1 или 2) србатывает фукция сменя первых задач в списке по кругу def change_task
                 work_unit_count_task = 0
                 for key in self.list_unit_and_task:
                     if self.list_unit_and_task[key] != []:
-                        work_unit_count_task +=1
-                    if work_unit_count_task == len(self.list_unit_and_task) and random.randint(1, 2) == 2: # срабатывает если у исполнителя есть хотя бы одна задача
-                         # с вероятностью 50 % (выпадет 1 или 2) србатывает фукция сменя первых задач в списке по кругу def change_task
-                        self.change_task() # меняем в списке list_unit_and_task первые задачи местами
+                        work_unit_count_task += 1
+                    if work_unit_count_task == len(self.list_unit_and_task) and random.randint(1, 2) == 2:  # срабатывает если у исполнителя есть хотя бы одна задача
+                        # с вероятностью 50 % (выпадет 1 или 2) србатывает фукция сменя первых задач в списке по кругу def change_task
+                        self.change_task()  # меняем в списке list_unit_and_task первые задачи местами
                         print('change_task', self.list_unit_and_task)
             if rest_of_task > 0:
                 inter_list_unit_and_task = self.list_unit_and_task[key][0][:-3]
@@ -184,8 +196,7 @@ class WindowUnit():
             count_task += 1
 
 
-
-class WindowTask(): #  окно первое со списком задач, нажимаем на исполнителя во втором окне видим список задач юнита
+class WindowTask():  # окно первое со списком задач, нажимаем на исполнителя во втором окне видим список задач юнита
     def __init__(self, main):
         self.field_result = Label(main, height=25, width=55)  # список с пуктами из листа list
         self.field_call = Label(main, text='Список задач', width=18, font=10, justify=LEFT)
@@ -204,7 +215,7 @@ class WindowTask(): #  окно первое со списком задач, н�
 
 
 class Task():  # класс задачи
-    def __init__(self, sum_min=10, sum_max=10,  min_complex=200, max_complex=250):
+    def __init__(self, sum_min=10, sum_max=10, min_complex=200, max_complex=250):
         self.sum_task_min = sum_min  # количество задач
         self.sum_task_max = sum_max  # количество задач
         self.min_complexity_task = min_complex  # мин сложность задачи
@@ -218,15 +229,13 @@ class Task():  # класс задачи
             self.arr_task.append("".join(random.choice(task_names) + "  " + str(random.randint(self.min_complexity_task, self.max_complexity_task))))
 
 
-
 class Setting():  # окно настройка
     def __init__(self, main):
         self.button_set = Button(main, text='Setting', width=16, font=10, command=self.window_setting)
         self.button_set.grid(row=3, column=2)
 
-
     def window_setting(self):  # открываем окно с настройкаами
-        global turn_on_setting
+        global turn_on_setting, trigger_time
         turn_on_setting = 1
         self.window_open = Toplevel()  # инициализируем новое окно
         self.window_open.title('Setting')  # титул окна
@@ -278,28 +287,26 @@ class Setting():  # окно настройка
         self.button_cancel.grid(row=5, column=2)  # создаем кнопку кенсел с командой закрытия окна
 
     def transit_date(self):
-
-            #WindowUnit.trigger_time = int(self.entry_timer_trigger.get())
-            WindowUnit.sum_unit_max = int(self.field_number_unit_max.get())
-            WindowUnit.sum_unit_min = int(self.field_number_unit_min.get())
-            WindowUnit.min_speed_unit = int(self.field_level_perform_min.get())
-            WindowUnit.max_speed_unit = int(self.field_level_perform_max.get())
-            Task.sum_task_min =  int(self.field_amount_task_min.get()) # количество задач
-            Task.sum_task_max =  int(self.field_amount_task_max.get()) # количество задач
-            Task.min_complexity_task = int(self.field_complexity_task_min.get())  # мин сложность задачи
-            Task.max_complexity_task =  int(self.field_complexity_task_max.get())# макс сложность задачи
-            self.close_win_setting() # выполняем передачу в функции и закрываем окно
+        global trigger_time
+        trigger_time = int(self.entry_timer_trigger.get())
+        WindowUnit.sum_unit_max = int(self.field_number_unit_max.get())
+        WindowUnit.sum_unit_min = int(self.field_number_unit_min.get())
+        WindowUnit.min_speed_unit = int(self.field_level_perform_min.get())
+        WindowUnit.max_speed_unit = int(self.field_level_perform_max.get())
+        Task.sum_task_min = int(self.field_amount_task_min.get())  # количество задач
+        Task.sum_task_max = int(self.field_amount_task_max.get())  # количество задач
+        Task.min_complexity_task = int(self.field_complexity_task_min.get())  # мин сложность задачи
+        Task.max_complexity_task = int(self.field_complexity_task_max.get())  # макс сложность задачи
+        self.close_win_setting()  # выполняем передачу в функции и закрываем окно
 
 
     def close_win_setting(self):  # функция закрывающая окно по кнопке cancel
-            self.window_open.destroy()  # команда закрывающая окно
+        self.window_open.destroy()  # команда закрывающая окно
 
 
 window_unit = WindowUnit(root)
 WindowTask = WindowTask(root)
 ButtonSetting = Setting(root)
-
-
 
 root.mainloop()
 
