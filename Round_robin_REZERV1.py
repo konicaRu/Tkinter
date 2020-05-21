@@ -47,7 +47,7 @@ class WindowUnit():
             self.task.task_generate()
         if turn_on_setting == 1:
             self.unit_generate(self.sum_unit_min, self.sum_unit_max, self.min_speed_unit, self.max_speed_unit)  # запускаем в классе Unit функцию unit_generate(), формируем список исполнителей
-            self.task = Task(20, 25, 90, 99)
+            self.task = Task(Task.sum_task_min, Task.sum_task_max, Task.min_complexity_task, Task.max_complexity_task)
             self.task.task_generate()  # # запускаем в классе Task функцию task_generate(), формируем список задач
 
         shift = 0
@@ -215,7 +215,7 @@ class Task():  # класс задачи
         self.sum_task = random.randint(self.sum_task_min, self.sum_task_max)
         self.arr_task = []
         for i in range(self.sum_task):
-            self.arr_task.append("".join(random.choice(task_names) + " " + str(random.randint(self.min_complexity_task, self.max_complexity_task))))
+            self.arr_task.append("".join(random.choice(task_names) + "  " + str(random.randint(self.min_complexity_task, self.max_complexity_task))))
 
 
 
@@ -284,11 +284,11 @@ class Setting():  # окно настройка
             WindowUnit.sum_unit_min = int(self.field_number_unit_min.get())
             WindowUnit.min_speed_unit = int(self.field_level_perform_min.get())
             WindowUnit.max_speed_unit = int(self.field_level_perform_max.get())
-            # Task.sum_task_min =  int(self.field_amount_task_min.get()) # количество задач
-            # Task.sum_task_max =  int(self.field_amount_task_max.get()) # количество задач
-            # Task.min_complexity_task = int(self.field_complexity_task_min.get())  # мин сложность задачи
-            # Task.max_complexity_task =  int(self.field_complexity_task_max.get())# макс сложность задачи
-            #self.close_win_setting() # выполняем передачу в функции и закрываем окно
+            Task.sum_task_min =  int(self.field_amount_task_min.get()) # количество задач
+            Task.sum_task_max =  int(self.field_amount_task_max.get()) # количество задач
+            Task.min_complexity_task = int(self.field_complexity_task_min.get())  # мин сложность задачи
+            Task.max_complexity_task =  int(self.field_complexity_task_max.get())# макс сложность задачи
+            self.close_win_setting() # выполняем передачу в функции и закрываем окно
 
 
     def close_win_setting(self):  # функция закрывающая окно по кнопке cancel
