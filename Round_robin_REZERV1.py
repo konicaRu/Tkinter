@@ -1,14 +1,14 @@
 from tkinter import *
 import random
 import time
-
+#   КОЛИЧЕСТВА ЗАДАЧ ДОЛЖНО ХВАТАТЬ НА ВСЕХ ПРОИЗВОДИТЕЛЕЙ
 root = Tk()
 root.title('Round robin')  # надпись на верху
 root.geometry('850x500+300+200')  # ширина=500, высота=400, x=300, y=200 размер окна
 root.resizable(True, False)  # размер окна может быть изменён только по горизонтали
 timer_after_id = ''  # переменная таймера ведет счет
 count_timer = 0  # счетчик таймера
-
+turn_on_setting = 0 # флажок включения введения данных из окна сеттиннг чтобы вводить данные из него
 
 class WindowUnit():
     def __init__(self, main):
@@ -35,14 +35,19 @@ class WindowUnit():
         self.list_unit_and_task = {}  # массив для хранения исполнителей и задач
         self.count_work_unit = 0  # счетчик остатка задач в функции work_unit
         self.timer_count_operations = 0 # счетчик количества срабатываний таймера
-
+        self.turn_on_setting = 0 # флажок включения окна сеттиннг чтобы вводить данные из него
 
     def close_main_win(self):  # функция закрывающая окно по кнопке cancel
             root.destroy()  # команда закрывающая окно
 
     def unit_and_task_arr(self):  # формируем  два списока исполнителей и задач self.list_unit_and_task-для работы и self.list_unit_and_task_to_display для отображения
-        self.unit_generate(self.sum_unit_min, self.sum_unit_max, self.min_speed_unit, self.max_speed_unit)  # запускаем в классе Unit функцию unit_generate(), формируем список исполнителей
+        global turn_on_setting
+        if turn_on_setting == 0:
+            self.unit_generate()
+        if turn_on_setting == 1:
+            self.unit_generate(self.sum_unit_min, self.sum_unit_max, self.min_speed_unit, self.max_speed_unit)  # запускаем в классе Unit функцию unit_generate(), формируем список исполнителей
         self.task.task_generate()  # # запускаем в классе Task функцию task_generate(), формируем список задач
+        
         shift = 0
         for keys in self.arr_unit:  # формируем рабочий словарь  self.list_unit_and_task вида {'Ivan 7': ['Пашет', 'Лудит', 'Закапывает'], 'Vasya 5': ['Сеет', 'Паяяет', 'Откапывает']}
             self.list_unit_and_task[keys] = [self.task.arr_task[val] for val in range(shift, len(self.task.arr_task), len(self.arr_unit))]  # генератор списков в словаре
@@ -132,7 +137,7 @@ class WindowUnit():
             rest_of_task = lvl_first_task - lvl_unit  # минусуем из сложности производительность
             if rest_of_task <= 0:  # если задача выполнена те сложность меньше нуля
                 self.list_ready_task = []  # список выполненных задач
-                self.list_ready_task.append('Работник-' + ' ' + key[:-3] + ', ' + 'Задача-' + ' ' + self.list_unit_and_task[key][0][:-3]+''+'t='+str(self.timer_count_operations))
+                self.list_ready_task.append('Unit-' + ' ' + key[:-3] + ', ' + 'Task-' + ' ' + self.list_unit_and_task[key][0][:-3]+''+'t='+str(self.timer_count_operations))
                 for i in self.list_ready_task:
                     self.listbox_ready_task.insert(END, i)
                 print(self.list_ready_task)
@@ -142,9 +147,9 @@ class WindowUnit():
                 for key in self.list_unit_and_task:
                     if self.list_unit_and_task[key] != []:
                         work_unit_count_task +=1
-                    if work_unit_count_task == len(self.list_unit_and_task) and random.randint(1, 2) == 2:
+                    if work_unit_count_task == len(self.list_unit_and_task) and random.randint(1, 2) == 2: # срабатывает если у исполнителя есть хотя бы одна задача
                          # с вероятностью 50 % (выпадет 1 или 2) србатывает фукция сменя первых задач в списке по кругу def change_task
-                        self.change_task()
+                        self.change_task() # меняем в списке list_unit_and_task первые задачи местами
                         print('change_task', self.list_unit_and_task)
             if rest_of_task > 0:
                 inter_list_unit_and_task = self.list_unit_and_task[key][0][:-3]
@@ -178,7 +183,7 @@ class WindowUnit():
 
 
 
-class WindowTask():
+class WindowTask(): #  окно первое со списком задач, нажимаем на исполнителя во втором окне видим список задач юнита
     def __init__(self, main):
         self.field_result = Label(main, height=25, width=55)  # список с пуктами из листа list
         self.field_call = Label(main, text='Список задач', width=18, font=10, justify=LEFT)
@@ -217,7 +222,10 @@ class Setting():  # окно настройка
         self.button_set = Button(main, text='Setting', width=16, font=10, command=self.window_setting)
         self.button_set.grid(row=3, column=2)
 
+
     def window_setting(self):  # открываем окно с настройкаами
+        global turn_on_setting
+        turn_on_setting = 1
         self.window_open = Toplevel()  # инициализируем новое окно
         self.window_open.title('Setting')  # титул окна
         self.window_open.geometry('800x200')  # размер окна
@@ -227,59 +235,61 @@ class Setting():  # окно настройка
         self.entry_timer_trigger.grid(row=0, column=1)  # создаем окно ввода
 
         # минимальное и максимальное количество исполнителей
-        self.field_number_unit_max = Label(self.window_open, text='Количество исполнителей. Максимальное:', justify='left', borderwidth=3, width=40, font=10)
-        self.field_number_unit_max.grid(row=1, column=0)  # название поля ввода
-        self.field_number_unit_max = Entry(self.window_open, width=8, font=15)
-        self.field_number_unit_max.grid(row=1, column=1)  # создаем окно ввода
-        self.field_number_unit_min = Label(self.window_open, text='Минимальное:', borderwidth=3, width=12, font=10, justify='right')
-        self.field_number_unit_min.grid(row=1, column=2)  # название поля ввода
+        self.field_number_unit_min = Label(self.window_open, text='Количество исполнителей. Минимальное:', justify='left', borderwidth=3, width=40, font=10)
+        self.field_number_unit_min.grid(row=1, column=0)  # название поля ввода
         self.field_number_unit_min = Entry(self.window_open, width=8, font=15)
-        self.field_number_unit_min.grid(row=1, column=3)  # создаем окно ввода
+        self.field_number_unit_min.grid(row=1, column=1)  # создаем окно ввода
+        self.field_number_unit_max = Label(self.window_open, text='Максимальное:', borderwidth=3, width=12, font=10, justify='right')
+        self.field_number_unit_max.grid(row=1, column=2)  # название поля ввода
+        self.field_number_unit_max = Entry(self.window_open, width=8, font=15)
+        self.field_number_unit_max.grid(row=1, column=3)  # создаем окно ввода
         # минимальная и максимальная производительность исполнителя
-        self.field_level_perform_max = Label(self.window_open, text='Производительность исполнителя. Макс:', borderwidth=3, width=40, font=10, justify='right')
-        self.field_level_perform_max.grid(row=2, column=0)  # название поля ввода
-        self.field_level_perform_max = Entry(self.window_open, width=8, font=15)
-        self.field_level_perform_max.grid(row=2, column=1)  # создаем окно ввода
-        self.field_level_perform_min = Label(self.window_open, text='Минимальное:', borderwidth=3, width=12, font=10, justify='right')
-        self.field_level_perform_min.grid(row=2, column=2)  # название поля ввода
+        self.field_level_perform_min = Label(self.window_open, text='Производительность исполнителя. Мин:', borderwidth=3, width=40, font=10, justify='right')
+        self.field_level_perform_min.grid(row=2, column=0)  # название поля ввода
         self.field_level_perform_min = Entry(self.window_open, width=8, font=15)
-        self.field_level_perform_min.grid(row=2, column=3)  # создаем окно ввода
+        self.field_level_perform_min.grid(row=2, column=1)  # создаем окно ввода
+        self.field_level_perform_max = Label(self.window_open, text='Максимальное:', borderwidth=3, width=12, font=10, justify='right')
+        self.field_level_perform_max.grid(row=2, column=2)  # название поля ввода
+        self.field_level_perform_max = Entry(self.window_open, width=8, font=15)
+        self.field_level_perform_max.grid(row=2, column=3)  # создаем окно ввода
         # минимальное и максимальное количество задач
-        self.field_amount_task_max = Label(self.window_open, text='Количество задач. Макс:', borderwidth=3, width=40, font=10, justify='right')
-        self.field_amount_task_max.grid(row=3, column=0)  # название поля ввода
-        self.field_amount_task_max = Entry(self.window_open, width=8, font=15)
-        self.field_amount_task_max.grid(row=3, column=1)  # создаем окно ввода
-        self.field_amount_task_min = Label(self.window_open, text='Минимальное:', borderwidth=3, width=12, font=10, justify='right')
-        self.field_amount_task_min.grid(row=3, column=2)  # название поля ввода
+        self.field_amount_task_min = Label(self.window_open, text='Количество задач. Мин.:', borderwidth=3, width=40, font=10, justify='right')
+        self.field_amount_task_min.grid(row=3, column=0)  # название поля ввода
         self.field_amount_task_min = Entry(self.window_open, width=8, font=15)
-        self.field_amount_task_min.grid(row=3, column=3)  # создаем окно ввода
+        self.field_amount_task_min.grid(row=3, column=1)  # создаем окно ввода
+        self.field_amount_task_max = Label(self.window_open, text='Максимальное:', borderwidth=3, width=12, font=10, justify='right')
+        self.field_amount_task_max.grid(row=3, column=2)  # название поля ввода
+        self.field_amount_task_max = Entry(self.window_open, width=8, font=15)
+        self.field_amount_task_max.grid(row=3, column=3)  # создаем окно ввода
         # минимальная и максимальная сложность задачи
-        self.field_complexity_task_max = Label(self.window_open, text='Сложность задач. Макс:', borderwidth=3, width=40, font=10, justify='right')
-        self.field_complexity_task_max.grid(row=4, column=0)  # название поля ввода
-        self.field_complexity_task_max = Entry(self.window_open, width=8, font=15)
-        self.field_complexity_task_max.grid(row=4, column=1)  # создаем окно ввода
-        self.field_complexity_task_min = Label(self.window_open, text='Минимальное:', borderwidth=3, width=12, font=10, justify='right')
-        self.field_complexity_task_min.grid(row=4, column=2)  # название поля ввода
+        self.field_complexity_task_min = Label(self.window_open, text='Сложность задач. Мин:', borderwidth=3, width=40, font=10, justify='right')
+        self.field_complexity_task_min.grid(row=4, column=0)  # название поля ввода
         self.field_complexity_task_min = Entry(self.window_open, width=8, font=15)
-        self.field_complexity_task_min.grid(row=4, column=3)  # создаем окно ввода
-        # кнопки ок и кенсел
+        self.field_complexity_task_min.grid(row=4, column=1)  # создаем окно ввода
+        self.field_complexity_task_max = Label(self.window_open, text='Максимальное:', borderwidth=3, width=12, font=10, justify='right')
+        self.field_complexity_task_max.grid(row=4, column=2)  # название поля ввода
+        self.field_complexity_task_max = Entry(self.window_open, width=8, font=15)
+        self.field_complexity_task_max.grid(row=4, column=3)  # создаем окно ввода
+        # кнопки ок и cancel
         self.button_ok = Button(self.window_open, text='OK', width=16, font=10, command=self.transit_date).grid(row=5, column=0)  # создаем кнопку ОК
-        self.button_cancel = Button(self.window_open, text='Cancel', width=16, font=10, command=self.close_win_setting).grid(row=5, column=1)  # создаем кнопку кенсел с командой закрытия окна
+        self.button_cancel = Button(self.window_open, text='Cancel', width=16, font=10, command=self.close_win_setting)
+        self.button_cancel.grid(row=5, column=2)  # создаем кнопку кенсел с командой закрытия окна
 
     def transit_date(self):
 
-            WindowUnit.trigger_time = int(self.entry_timer_trigger.get())
+            #WindowUnit.trigger_time = int(self.entry_timer_trigger.get())
             WindowUnit.sum_unit_max = int(self.field_number_unit_max.get())
             WindowUnit.sum_unit_min = int(self.field_number_unit_min.get())
             WindowUnit.min_speed_unit = int(self.field_level_perform_min.get())
             WindowUnit.max_speed_unit = int(self.field_level_perform_max.get())
-            Task.sum_task_min =  int(self.field_amount_task_min.get()) # количество задач
-            Task.sum_task_max =  int(self.field_amount_task_max.get()) # количество задач
-            Task.min_complexity_task = int(self.field_complexity_task_min.get())  # мин сложность задачи
-            Task.max_complexity_task =  int(self.field_complexity_task_max.get())# макс сложность задачи
+            # Task.sum_task_min =  int(self.field_amount_task_min.get()) # количество задач
+            # Task.sum_task_max =  int(self.field_amount_task_max.get()) # количество задач
+            # Task.min_complexity_task = int(self.field_complexity_task_min.get())  # мин сложность задачи
+            # Task.max_complexity_task =  int(self.field_complexity_task_max.get())# макс сложность задачи
+            #self.close_win_setting() # выполняем передачу в фукции и закрываем окно
 
 
-def close_win_setting(self):  # функция закрывающая окно по кнопке cancel
+    def close_win_setting(self):  # функция закрывающая окно по кнопке cancel
             self.window_open.destroy()  # команда закрывающая окно
 
 
