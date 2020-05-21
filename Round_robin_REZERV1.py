@@ -44,10 +44,12 @@ class WindowUnit():
         global turn_on_setting
         if turn_on_setting == 0:
             self.unit_generate()
+            self.task.task_generate()
         if turn_on_setting == 1:
             self.unit_generate(self.sum_unit_min, self.sum_unit_max, self.min_speed_unit, self.max_speed_unit)  # запускаем в классе Unit функцию unit_generate(), формируем список исполнителей
-        self.task.task_generate()  # # запускаем в классе Task функцию task_generate(), формируем список задач
-        
+            self.task = Task(20, 25, 90, 99)
+            self.task.task_generate()  # # запускаем в классе Task функцию task_generate(), формируем список задач
+
         shift = 0
         for keys in self.arr_unit:  # формируем рабочий словарь  self.list_unit_and_task вида {'Ivan 7': ['Пашет', 'Лудит', 'Закапывает'], 'Vasya 5': ['Сеет', 'Паяяет', 'Откапывает']}
             self.list_unit_and_task[keys] = [self.task.arr_task[val] for val in range(shift, len(self.task.arr_task), len(self.arr_unit))]  # генератор списков в словаре
@@ -286,7 +288,7 @@ class Setting():  # окно настройка
             # Task.sum_task_max =  int(self.field_amount_task_max.get()) # количество задач
             # Task.min_complexity_task = int(self.field_complexity_task_min.get())  # мин сложность задачи
             # Task.max_complexity_task =  int(self.field_complexity_task_max.get())# макс сложность задачи
-            #self.close_win_setting() # выполняем передачу в фукции и закрываем окно
+            #self.close_win_setting() # выполняем передачу в функции и закрываем окно
 
 
     def close_win_setting(self):  # функция закрывающая окно по кнопке cancel
