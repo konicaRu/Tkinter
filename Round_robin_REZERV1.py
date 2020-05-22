@@ -10,7 +10,7 @@ root.resizable(True, False)  # размер окна может быть изм�
 timer_after_id = ''  # переменная таймера ведет счет
 count_timer = 0  # счетчик таймера
 turn_on_setting = 0  # флажок включения введения данных из окна сеттиннг чтобы вводить данные из него
-trigger_time = 5
+trigger_time = 3
 
 
 class WindowUnit():
@@ -24,13 +24,18 @@ class WindowUnit():
         self.field_call_ready_task = Label(main, text='Выполненные задачи', width=25, font=10, justify=LEFT)
         self.field_call_ready_task.grid(row=0, column=2)
         self.listbox_ready_task.grid(row=1, column=2)
-
         self.button_new = Button(main, text='New', width=16, font=10, command=self.unit_and_task_arr)  # кнопка New на первом листе
         self.button_new.grid(row=3, column=0, sticky='s')  # расположение кнопки New
+
         self.button_pause = Button(main, text='Pause', width=16, font=10, command=self.pause_timer)
         self.button_pause.grid(row=3, column=1)
-        self.button_new = Button(main, text='Exit', width=16, font=10, command=self.close_main_win)  # кнопка New на первом листе
-        self.button_new.grid(row=4, column=2, sticky='n')  # расположение кнопки New
+
+        self.button_start = Button(main, text='Start', width=16, font=10, command=self.start_timer)
+
+        
+
+        self.button_exit = Button(main, text='Exit', width=16, font=10, command=self.close_main_win)  # кнопка New на первом листе
+        self.button_exit.grid(row=4, column=2, sticky='n')  # расположение кнопки New
         # self.unit = Unit()  # ссылка на класс исполнители
         self.task = Task()  # ссылка на класс задачи
         self.setting = Setting(main)  # ссылка на класс Setting
@@ -139,7 +144,15 @@ class WindowUnit():
             count_timer = 0
 
     def pause_timer(self):
+        self.button_pause.grid_forget()
+        self.button_start.grid(row=3, column=1)
         root.after_cancel(timer_after_id)
+
+    def start_timer(self):
+        self.button_start.grid_forget()
+        self.button_pause.grid(row=3, column=1)
+        self.timer()
+
 
     def work_unit(self):  # моделируем работу # на каждое срабатывание таймера бежим по рабочему словарю вычитаем из сложности первой задачи производительность юнита
 
