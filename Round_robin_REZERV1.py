@@ -32,7 +32,7 @@ class WindowUnit():
 
         self.button_start = Button(main, text='Start', width=16, font=10, command=self.start_timer)
 
-        
+
 
         self.button_exit = Button(main, text='Exit', width=16, font=10, command=self.close_main_win)  # кнопка New на первом листе
         self.button_exit.grid(row=4, column=2, sticky='n')  # расположение кнопки New
