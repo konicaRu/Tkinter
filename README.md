@@ -1,4 +1,4 @@
-[# Реализация популярного алгоритма распределения нагрузки между исполнителями round-robin](https://raw.githubusercontent.com/konicaRu/studying_tkinter/master/Round_robin_REZERV1.py)
+#[Реализация популярного алгоритма распределения нагрузки между исполнителями round-robin](https://raw.githubusercontent.com/konicaRu/studying_tkinter/master/Round_robin_REZERV1.py)
 
 ![](https://raw.githubusercontent.com/konicaRu/Tkinter/master/gif_raund_robin.gif)
 
