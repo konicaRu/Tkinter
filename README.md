@@ -1,4 +1,4 @@
-# Менеджер-бот и round-robin
+# Реализация популярного алгоритма распределения нагрузки между исполнителями round-robin
 
 ![](https://raw.githubusercontent.com/konicaRu/Tkinter/master/gif_raund_robin.gif)
 
